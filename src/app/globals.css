@@ -1,0 +1,108 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 38 25% 97%;
+    --foreground: 210 15% 12%;
+    --card: 38 25% 98%;
+    --card-foreground: 210 15% 12%;
+    --popover: 38 25% 98%;
+    --popover-foreground: 210 15% 12%;
+    --primary: 152 52% 20%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 152 38% 36%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 38 18% 92%;
+    --muted-foreground: 215 10% 42%;
+    --accent: 32 50% 92%;
+    --accent-foreground: 215 15% 16%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 30 18% 86%;
+    --input: 30 18% 86%;
+    --ring: 152 52% 20%;
+    --radius: 1.1rem;
+
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 100%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 0%;
+    --info: 217 91% 60%;
+    --info-foreground: 0 0% 100%;
+
+    --neu-shadow-light: rgba(255, 255, 255, 0.9);
+    --neu-shadow-dark: rgba(120, 110, 90, 0.18);
+    --neu-shadow-sm: 4px 4px 6px -1px var(--neu-shadow-dark), -3px -3px 6px var(--neu-shadow-light);
+    --neu-shadow: 10px 10px 16px -2px var(--neu-shadow-dark), -8px -8px 16px -2px var(--neu-shadow-light);
+    --neu-shadow-lg: 16px 16px 24px -3px var(--neu-shadow-dark), -12px -12px 24px -3px var(--neu-shadow-light);
+    --neu-shadow-inset: inset -4px -4px 8px -1px var(--neu-shadow-light), inset 3px 3px 8px -1px var(--neu-shadow-dark);
+
+    --sidebar-width: 280px;
+  }
+
+  .dark {
+    --background: 220 15% 8%;
+    --foreground: 0 0% 98%;
+    --card: 220 15% 10%;
+    --card-foreground: 0 0% 98%;
+    --popover: 220 15% 10%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 152 44% 46%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 152 38% 32%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 220 10% 16%;
+    --muted-foreground: 220 10% 70%;
+    --accent: 210 16% 16%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 220 10% 18%;
+    --input: 220 10% 18%;
+    --ring: 152 44% 46%;
+
+    --success: 142 71% 45%;
+    --success-foreground: 0 0% 100%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 0%;
+    --info: 217 91% 60%;
+    --info-foreground: 0 0% 100%;
+
+    --neu-shadow-light: rgba(60, 70, 90, 0.45);
+    --neu-shadow-dark: rgba(0, 0, 0, 0.65);
+    --neu-shadow-sm: 5px 5px 8px -2px var(--neu-shadow-dark), -4px -4px 8px -2px var(--neu-shadow-light);
+    --neu-shadow: 10px 10px 16px -3px var(--neu-shadow-dark), -8px -8px 16px -3px var(--neu-shadow-light);
+    --neu-shadow-lg: 16px 16px 24px -4px var(--neu-shadow-dark), -12px -12px 24px -4px var(--neu-shadow-light);
+    --neu-shadow-inset: inset -5px -5px 8px -2px var(--neu-shadow-light), inset 3px 3px 10px -2px var(--neu-shadow-dark);
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  .neu-flat {
+    box-shadow: var(--neu-shadow);
+    background: hsl(var(--background));
+    border-radius: var(--radius);
+  }
+
+  .glass {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: var(--radius);
+  }
+
+  .dark .glass {
+    background: rgba(30, 35, 45, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+}
