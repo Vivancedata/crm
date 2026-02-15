@@ -5,7 +5,7 @@ import { formatCurrency } from "@/lib/utils";
 import { 
   TrendingUp, 
   Users, 
-  Handshake,
+  Briefcase,
   DollarSign
 } from "lucide-react";
 
@@ -22,7 +22,7 @@ const stats = [
     value: "23",
     change: "+4",
     changeType: "positive" as const,
-    icon: Handshake,
+    icon: Briefcase,
   },
   {
     name: "New Contacts",

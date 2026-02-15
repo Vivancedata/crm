@@ -64,7 +64,7 @@ export function UpcomingTasks() {
                 <p className="text-sm text-muted-foreground">{task.contact}</p>
               </div>
               <div className="flex flex-col items-end gap-1">
-                <Badge variant={priorityColors[task.priority]} className="text-xs">
+                <Badge variant={priorityColors[task.priority as keyof typeof priorityColors]} className="text-xs">
                   {task.priority}
                 </Badge>
                 <span className="flex items-center gap-1 text-xs text-muted-foreground">
