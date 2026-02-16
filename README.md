@@ -19,8 +19,8 @@ A modern CRM built for AI consulting businesses, specifically designed to serve 
 
 ### Communication
 - **Email Templates** — Reusable templates for outreach
-- **Email Tracking** — Send, track opens/clicks
-- **Activity Logging** — Auto-log all communications
+- **Email Sending** — Send emails via Resend (deliverability depends on your domain setup)
+- **Activity Logging** — Log communications and follow-ups
 
 ### Analytics
 - **Pipeline Dashboard** — Total value, deal counts by stage
@@ -31,7 +31,7 @@ A modern CRM built for AI consulting businesses, specifically designed to serve 
 
 | Component | Technology |
 |-----------|------------|
-| Framework | Next.js 14 (App Router) |
+| Framework | Next.js 15 (App Router) |
 | Styling | Tailwind CSS + Vivancedata UI |
 | Database | PostgreSQL + Prisma ORM |
 | Auth | Clerk |
@@ -55,20 +55,21 @@ git clone https://github.com/Vivancedata/crm.git
 cd crm
 
 # Install dependencies
-bun install
+npm install
 
 # Set up environment variables
 cp .env.example .env
 # Edit .env with your credentials
 
-# Push database schema
-bun run db:push
+# Apply database migrations
+npm run db:migrate
+# (For quick prototyping only: npm run db:push)
 
 # Seed with sample data (optional)
-bun run db:seed
+npm run db:seed
 
 # Start development server
-bun run dev
+npm run dev
 ```
 
 ### Environment Variables
@@ -83,6 +84,16 @@ CLERK_SECRET_KEY="sk_..."
 
 # Resend (optional)
 RESEND_API_KEY="re_..."
+EMAIL_FROM="CRM <noreply@vivancedata.com>"
+
+# Anthropic (optional)
+ANTHROPIC_API_KEY="sk-ant-..."
+
+# Logging
+LOG_LEVEL="info"
+
+# Rate limiting store (memory|db). Default: db in production, memory in dev.
+RATE_LIMIT_STORE="db"
 ```
 
 ## Project Structure
@@ -99,16 +110,15 @@ src/
 │   │   ├── tasks/         # Task management
 │   │   ├── emails/        # Email templates & history
 │   │   └── reports/       # Analytics & reports
-│   ├── api/               # API routes
 │   └── layout.tsx         # Root layout
 ├── components/
 │   ├── ui/                # Base UI components
 │   ├── layout/            # Layout components
 │   └── dashboard/         # Dashboard-specific components
 ├── lib/
-│   ├── db.ts              # Prisma client
+│   ├── prisma.ts          # Prisma client
+│   ├── actions/           # Server Actions (all mutations)
 │   └── utils.ts           # Utility functions
-└── types/                 # TypeScript types
 ```
 
 ## Design System

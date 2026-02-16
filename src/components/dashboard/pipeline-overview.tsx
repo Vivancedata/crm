@@ -4,16 +4,19 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { formatCurrency } from "@/lib/utils";
 
-const pipelineStages = [
-  { name: "Lead", count: 8, value: 45000, variant: "lead" as const },
-  { name: "Qualified", count: 5, value: 72500, variant: "qualified" as const },
-  { name: "Discovery", count: 4, value: 55000, variant: "discovery" as const },
-  { name: "Proposal", count: 3, value: 42000, variant: "proposal" as const },
-  { name: "Negotiation", count: 2, value: 33000, variant: "negotiation" as const },
-];
+interface PipelineStage {
+  name: string;
+  count: number;
+  value: number;
+  variant: "lead" | "qualified" | "discovery" | "proposal" | "negotiation";
+}
 
-export function PipelineOverview() {
-  const totalValue = pipelineStages.reduce((acc, stage) => acc + stage.value, 0);
+interface PipelineOverviewProps {
+  stages: PipelineStage[];
+}
+
+export function PipelineOverview({ stages }: PipelineOverviewProps) {
+  const totalValue = stages.reduce((acc, stage) => acc + stage.value, 0);
 
   return (
     <Card variant="neu">
@@ -22,9 +25,9 @@ export function PipelineOverview() {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {pipelineStages.map((stage) => {
-            const percentage = (stage.value / totalValue) * 100;
-            
+          {stages.map((stage) => {
+            const percentage = totalValue > 0 ? (stage.value / totalValue) * 100 : 0;
+
             return (
               <div key={stage.name} className="space-y-2">
                 <div className="flex items-center justify-between">
@@ -48,7 +51,7 @@ export function PipelineOverview() {
             );
           })}
         </div>
-        
+
         <div className="mt-6 flex items-center justify-between border-t pt-4">
           <span className="font-medium">Total Pipeline Value</span>
           <span className="text-xl font-bold text-primary">

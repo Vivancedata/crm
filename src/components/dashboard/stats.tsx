@@ -2,45 +2,50 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { formatCurrency } from "@/lib/utils";
-import { 
-  TrendingUp, 
-  Users, 
+import {
+  TrendingUp,
+  Users,
   Briefcase,
-  DollarSign
+  DollarSign,
 } from "lucide-react";
 
-const stats = [
-  {
-    name: "Pipeline Value",
-    value: "$247,500",
-    change: "+12.5%",
-    changeType: "positive" as const,
-    icon: DollarSign,
-  },
-  {
-    name: "Active Deals",
-    value: "23",
-    change: "+4",
-    changeType: "positive" as const,
-    icon: Briefcase,
-  },
-  {
-    name: "New Contacts",
-    value: "18",
-    change: "+7 this week",
-    changeType: "positive" as const,
-    icon: Users,
-  },
-  {
-    name: "Win Rate",
-    value: "34%",
-    change: "+2.1%",
-    changeType: "positive" as const,
-    icon: TrendingUp,
-  },
-];
+interface DashboardStatsProps {
+  pipelineValue: number;
+  activeDeals: number;
+  newContactsThisWeek: number;
+  winRate: number;
+}
 
-export function DashboardStats() {
+export function DashboardStats({
+  pipelineValue,
+  activeDeals,
+  newContactsThisWeek,
+  winRate,
+}: DashboardStatsProps) {
+  const stats = [
+    {
+      name: "Pipeline Value",
+      value: formatCurrency(pipelineValue),
+      icon: DollarSign,
+    },
+    {
+      name: "Active Deals",
+      value: String(activeDeals),
+      icon: Briefcase,
+    },
+    {
+      name: "New Contacts",
+      value: String(newContactsThisWeek),
+      subtitle: "this week",
+      icon: Users,
+    },
+    {
+      name: "Win Rate",
+      value: `${winRate}%`,
+      icon: TrendingUp,
+    },
+  ];
+
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
       {stats.map((stat) => (
@@ -57,17 +62,11 @@ export function DashboardStats() {
                 <stat.icon className="h-5 w-5 text-primary" />
               </div>
             </div>
-            <div className="mt-2">
-              <span
-                className={
-                  stat.changeType === "positive"
-                    ? "text-success text-sm font-medium"
-                    : "text-destructive text-sm font-medium"
-                }
-              >
-                {stat.change}
-              </span>
-            </div>
+            {stat.subtitle && (
+              <p className="mt-1 text-xs text-muted-foreground">
+                {stat.subtitle}
+              </p>
+            )}
           </CardContent>
         </Card>
       ))}

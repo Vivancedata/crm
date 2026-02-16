@@ -28,6 +28,9 @@ Thumbs.db
 *.log
 npm-debug.log*
 
+# TypeScript incremental build info
+*.tsbuildinfo
+
 # Prisma
 prisma/*.db
 prisma/*.db-journal
@@ -37,3 +40,6 @@ coverage/
 
 # Vercel
 .vercel
+
+# Local research/docs that shouldn't ship
+research/

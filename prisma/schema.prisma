@@ -8,6 +8,20 @@ datasource db {
 }
 
 // ============================================================================
+// SYSTEM
+// ============================================================================
+
+model RateLimit {
+  key       String   @id
+  count     Int
+  resetAt   DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([resetAt])
+}
+
+// ============================================================================
 // USERS & AUTH
 // ============================================================================
 
@@ -28,8 +42,9 @@ model User {
   activities   Activity[]
   tasks        Task[]
   projects     Project[]
-  emailsSent   Email[]
-  notes        Note[]
+  emailsSent     Email[]
+  notes          Note[]
+  emailTemplates EmailTemplate[]
 
   @@index([clerkId])
   @@index([email])
@@ -280,6 +295,7 @@ model Activity {
   @@index([companyId])
   @@index([dealId])
   @@index([occurredAt])
+  @@index([projectId])
 }
 
 enum ActivityType {
@@ -317,6 +333,7 @@ model Task {
   @@index([status])
   @@index([assigneeId])
   @@index([dueDate])
+  @@index([projectId])
 }
 
 enum Priority {
@@ -383,10 +400,13 @@ model EmailTemplate {
   updatedAt DateTime @updatedAt
 
   // Relations
-  emails    Email[]
+  createdBy   User     @relation(fields: [createdById], references: [id])
+  createdById String
+  emails      Email[]
 
   @@index([category])
   @@index([isActive])
+  @@index([createdById])
 }
 
 // ============================================================================
