@@ -1,22 +1,32 @@
 "use client";
 
-import {
-  PieChart,
-  Pie,
-  Cell,
-  Tooltip,
-  ResponsiveContainer,
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-} from "recharts";
+import type { ComponentType } from "react";
+import dynamic from "next/dynamic";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+
+type RechartsComponent = ComponentType<Record<string, unknown>>;
+
+function dynamicRechartsComponent(name: string) {
+  return dynamic(async () => {
+    const recharts = await import("recharts");
+    return recharts[name as keyof typeof recharts] as RechartsComponent;
+  }, { ssr: false });
+}
+
+const PieChart = dynamicRechartsComponent("PieChart");
+const Pie = dynamicRechartsComponent("Pie");
+const Cell = dynamicRechartsComponent("Cell");
+const ChartTooltip = dynamicRechartsComponent("Tooltip");
+const ResponsiveContainer = dynamicRechartsComponent("ResponsiveContainer");
+const AreaChart = dynamicRechartsComponent("AreaChart");
+const Area = dynamicRechartsComponent("Area");
+const XAxis = dynamicRechartsComponent("XAxis");
+const YAxis = dynamicRechartsComponent("YAxis");
 
 interface SourceData {
   name: string;
@@ -129,7 +139,7 @@ export function LeadSourceChart({ bySource, byWeek }: LeadSourceChartProps) {
                       />
                     ))}
                   </Pie>
-                  <Tooltip content={<SourceTooltip />} />
+                  <ChartTooltip content={<SourceTooltip />} />
                 </PieChart>
               </ResponsiveContainer>
               <div className="mt-2 grid grid-cols-2 gap-2">
@@ -186,7 +196,7 @@ export function LeadSourceChart({ bySource, byWeek }: LeadSourceChartProps) {
                   stroke="hsl(var(--muted-foreground))"
                   allowDecimals={false}
                 />
-                <Tooltip content={<WeekTooltip />} />
+                <ChartTooltip content={<WeekTooltip />} />
                 <Area
                   type="monotone"
                   dataKey="count"

@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -55,6 +56,13 @@ const ITEMS_PER_PAGE = [
   { value: "100", label: "100" },
 ];
 
+const FIELD_IDS = {
+  defaultDealStage: "preferences-default-deal-stage",
+  defaultServiceType: "preferences-default-service-type",
+  dateFormat: "preferences-date-format",
+  itemsPerPage: "preferences-items-per-page",
+} as const;
+
 export function PreferencesTab() {
   const [preferences, setPreferences] =
     useState<Preferences>(DEFAULT_PREFERENCES);
@@ -91,12 +99,20 @@ export function PreferencesTab() {
         <CardContent className="space-y-6">
           {/* Default Deal Stage */}
           <div className="grid gap-2">
-            <label className="text-sm font-medium">Default Deal Stage</label>
+            <Label
+              className="text-sm font-medium"
+              htmlFor={FIELD_IDS.defaultDealStage}
+            >
+              Default Deal Stage
+            </Label>
             <Select
               value={preferences.defaultDealStage}
               onValueChange={(value) => handleChange("defaultDealStage", value)}
             >
-              <SelectTrigger className="w-full max-w-xs">
+              <SelectTrigger
+                id={FIELD_IDS.defaultDealStage}
+                className="w-full max-w-xs"
+              >
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -114,14 +130,22 @@ export function PreferencesTab() {
 
           {/* Default Service Type */}
           <div className="grid gap-2">
-            <label className="text-sm font-medium">Default Service Type</label>
+            <Label
+              className="text-sm font-medium"
+              htmlFor={FIELD_IDS.defaultServiceType}
+            >
+              Default Service Type
+            </Label>
             <Select
               value={preferences.defaultServiceType}
               onValueChange={(value) =>
                 handleChange("defaultServiceType", value)
               }
             >
-              <SelectTrigger className="w-full max-w-xs">
+              <SelectTrigger
+                id={FIELD_IDS.defaultServiceType}
+                className="w-full max-w-xs"
+              >
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -139,14 +163,20 @@ export function PreferencesTab() {
 
           {/* Date Format */}
           <div className="grid gap-2">
-            <label className="text-sm font-medium">
+            <Label
+              className="text-sm font-medium"
+              htmlFor={FIELD_IDS.dateFormat}
+            >
               Date Format Preference
-            </label>
+            </Label>
             <Select
               value={preferences.dateFormat}
               onValueChange={(value) => handleChange("dateFormat", value)}
             >
-              <SelectTrigger className="w-full max-w-xs">
+              <SelectTrigger
+                id={FIELD_IDS.dateFormat}
+                className="w-full max-w-xs"
+              >
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -164,12 +194,20 @@ export function PreferencesTab() {
 
           {/* Items Per Page */}
           <div className="grid gap-2">
-            <label className="text-sm font-medium">Items Per Page</label>
+            <Label
+              className="text-sm font-medium"
+              htmlFor={FIELD_IDS.itemsPerPage}
+            >
+              Items Per Page
+            </Label>
             <Select
               value={preferences.itemsPerPage}
               onValueChange={(value) => handleChange("itemsPerPage", value)}
             >
-              <SelectTrigger className="w-full max-w-xs">
+              <SelectTrigger
+                id={FIELD_IDS.itemsPerPage}
+                className="w-full max-w-xs"
+              >
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>

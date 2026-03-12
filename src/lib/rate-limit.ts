@@ -2,7 +2,7 @@ import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { logger } from "@/lib/logger";
 
-export interface RateLimitOptions {
+interface RateLimitOptions {
   windowMs: number; // Time window in milliseconds
   maxRequests: number; // Max requests per window
 }
@@ -121,4 +121,3 @@ export async function checkRateLimit(
   if (store === "db") return checkRateLimitDb(key, options);
   return checkRateLimitMemory(key, options);
 }
-

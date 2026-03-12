@@ -5,6 +5,7 @@ import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CommandSearch } from "@/components/shared/command-search";
 import { NotificationsPopover } from "@/components/shared/notifications-popover";
+import { isClerkClientConfigured } from "@/lib/clerk-config";
 
 export function Header() {
   return (
@@ -23,7 +24,7 @@ export function Header() {
 
         <NotificationsPopover />
 
-        <UserButton afterSignOutUrl="/sign-in" />
+        {isClerkClientConfigured() ? <UserButton afterSignOutUrl="/sign-in" /> : null}
       </div>
     </header>
   );

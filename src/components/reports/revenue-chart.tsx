@@ -1,16 +1,7 @@
 "use client";
 
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  AreaChart,
-  Area,
-  Cell,
-} from "recharts";
+import type { ComponentType } from "react";
+import dynamic from "next/dynamic";
 import {
   Card,
   CardContent,
@@ -20,6 +11,25 @@ import {
 import { StatsCard } from "@/components/reports/stats-card";
 import { formatCurrency } from "@/lib/utils";
 import { DollarSign, TrendingUp, Target } from "lucide-react";
+
+type RechartsComponent = ComponentType<Record<string, unknown>>;
+
+function dynamicRechartsComponent(name: string) {
+  return dynamic(async () => {
+    const recharts = await import("recharts");
+    return recharts[name as keyof typeof recharts] as RechartsComponent;
+  }, { ssr: false });
+}
+
+const BarChart = dynamicRechartsComponent("BarChart");
+const Bar = dynamicRechartsComponent("Bar");
+const XAxis = dynamicRechartsComponent("XAxis");
+const YAxis = dynamicRechartsComponent("YAxis");
+const ChartTooltip = dynamicRechartsComponent("Tooltip");
+const ResponsiveContainer = dynamicRechartsComponent("ResponsiveContainer");
+const AreaChart = dynamicRechartsComponent("AreaChart");
+const Area = dynamicRechartsComponent("Area");
+const Cell = dynamicRechartsComponent("Cell");
 
 interface ServiceTypeData {
   name: string;
@@ -153,11 +163,11 @@ export function RevenueChart({
                       height={60}
                     />
                     <YAxis
-                      tickFormatter={(v) => formatCurrency(v)}
+                      tickFormatter={(v: number | string) => formatCurrency(Number(v))}
                       tick={{ fontSize: 12 }}
                       stroke="hsl(var(--muted-foreground))"
                     />
-                    <Tooltip content={<ServiceTooltip />} />
+                    <ChartTooltip content={<ServiceTooltip />} />
                     <Bar dataKey="value" radius={[4, 4, 0, 0]} barSize={40}>
                       {byServiceType.map((entry, index) => (
                         <Cell
@@ -218,11 +228,11 @@ export function RevenueChart({
                     stroke="hsl(var(--muted-foreground))"
                   />
                   <YAxis
-                    tickFormatter={(v) => formatCurrency(v)}
+                    tickFormatter={(v: number | string) => formatCurrency(Number(v))}
                     tick={{ fontSize: 12 }}
                     stroke="hsl(var(--muted-foreground))"
                   />
-                  <Tooltip content={<MonthTooltip />} />
+                  <ChartTooltip content={<MonthTooltip />} />
                   <Area
                     type="monotone"
                     dataKey="value"

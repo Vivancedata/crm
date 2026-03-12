@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
@@ -11,12 +11,11 @@ interface PaginationProps {
 
 export function Pagination({ currentPage, totalPages }: PaginationProps) {
   const router = useRouter();
-  const searchParams = useSearchParams();
 
   if (totalPages <= 1) return null;
 
   function goToPage(page: number): void {
-    const params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams(window.location.search);
     params.set("page", String(page));
     router.push(`?${params.toString()}`);
   }

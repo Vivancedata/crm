@@ -70,6 +70,17 @@ export function DealCard({ deal, isDragOverlay = false }: DealCardProps) {
     }
   }
 
+  function handleCardKeyDown(event: React.KeyboardEvent<HTMLElement>) {
+    if (event.target !== event.currentTarget) {
+      return;
+    }
+
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      handleCardClick();
+    }
+  }
+
   return (
     <div
       ref={!isDragOverlay ? setNodeRef : undefined}
@@ -81,7 +92,10 @@ export function DealCard({ deal, isDragOverlay = false }: DealCardProps) {
         className={`cursor-pointer hover:shadow-neu-lg transition-shadow ${
           isDragOverlay ? "shadow-neu-lg ring-2 ring-primary/20 rotate-[2deg]" : ""
         }`}
+        role="button"
+        tabIndex={0}
         onClick={handleCardClick}
+        onKeyDown={handleCardKeyDown}
       >
         <CardContent className="p-4">
           <div className="flex items-start justify-between">
@@ -101,40 +115,42 @@ export function DealCard({ deal, isDragOverlay = false }: DealCardProps) {
                 </p>
               </div>
             </div>
-            <div onClick={(e) => e.stopPropagation()}>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button className="rounded p-1 hover:bg-accent">
-                    <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuLabel>Move to Stage</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  {ACTIVE_STAGES.filter((s) => s !== deal.stage).map((stage) => (
-                    <DropdownMenuItem
-                      key={stage}
-                      onClick={() => handleStageChange(stage)}
-                    >
-                      {DEAL_STAGE_LABELS[stage]}
-                    </DropdownMenuItem>
-                  ))}
-                  <DropdownMenuSeparator />
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  type="button"
+                  className="rounded p-1 hover:bg-accent"
+                  onClick={(event) => event.stopPropagation()}
+                >
+                  <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Move to Stage</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {ACTIVE_STAGES.filter((s) => s !== deal.stage).map((stage) => (
                   <DropdownMenuItem
-                    onClick={() => handleStageChange("WON")}
-                    className="text-success"
+                    key={stage}
+                    onClick={() => handleStageChange(stage)}
                   >
-                    Mark as Won
+                    {DEAL_STAGE_LABELS[stage]}
                   </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => handleStageChange("LOST")}
-                    className="text-destructive"
-                  >
-                    Mark as Lost
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
+                ))}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={() => handleStageChange("WON")}
+                  className="text-success"
+                >
+                  Mark as Won
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => handleStageChange("LOST")}
+                  className="text-destructive"
+                >
+                  Mark as Lost
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
           <div className="mt-3 flex items-center justify-between">
             <span className="text-sm text-muted-foreground truncate">

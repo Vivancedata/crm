@@ -161,8 +161,8 @@ export function DealInsights({ dealId }: DealInsightsProps) {
         <div>
           <p className="mb-2 text-sm font-medium">Suggested Next Steps:</p>
           <ul className="space-y-1.5">
-            {insights.nextSteps.map((step, i) => (
-              <li key={i} className="flex items-start gap-2 text-sm">
+            {insights.nextSteps.map((step) => (
+              <li key={step} className="flex items-start gap-2 text-sm">
                 <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
                 <span className="text-muted-foreground">{step}</span>
               </li>

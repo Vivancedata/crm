@@ -9,6 +9,7 @@
     "start": "next start",
     "lint": "eslint . --max-warnings 0",
     "test": "node --test --import tsx test/**/*.test.mjs",
+    "test:coverage": "node --test --experimental-test-coverage --test-coverage-lines=85 --test-coverage-branches=85 --test-coverage-functions=85 --test-coverage-include='src/lib/*.ts' --import tsx test/**/*.test.mjs",
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
     "db:deploy": "prisma migrate deploy",

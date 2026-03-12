@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useReducer } from "react";
 import { Upload } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -28,23 +28,144 @@ type ImportResult = {
   errors: { row: number; message: string }[];
 };
 
+interface PreviewCell {
+  id: string;
+  value: string;
+}
+
+interface PreviewRow {
+  id: string;
+  cells: PreviewCell[];
+}
+
+interface ImportDialogState {
+  file: File | null;
+  csvContent: string;
+  preview: PreviewRow[];
+  importing: boolean;
+  result: ImportResult | null;
+  dragOver: boolean;
+}
+
+type ImportDialogAction =
+  | { type: "reset" }
+  | {
+      type: "file-loaded";
+      file: File;
+      csvContent: string;
+      preview: PreviewRow[];
+    }
+  | { type: "set-result"; result: ImportResult | null }
+  | { type: "set-importing"; importing: boolean }
+  | { type: "set-drag-over"; dragOver: boolean };
+
+const INITIAL_STATE: ImportDialogState = {
+  file: null,
+  csvContent: "",
+  preview: [],
+  importing: false,
+  result: null,
+  dragOver: false,
+};
+
+function importDialogReducer(
+  state: ImportDialogState,
+  action: ImportDialogAction
+): ImportDialogState {
+  switch (action.type) {
+    case "reset":
+      return INITIAL_STATE;
+    case "file-loaded":
+      return {
+        ...state,
+        file: action.file,
+        csvContent: action.csvContent,
+        preview: action.preview,
+        result: null,
+        dragOver: false,
+      };
+    case "set-result":
+      return {
+        ...state,
+        result: action.result,
+      };
+    case "set-importing":
+      return {
+        ...state,
+        importing: action.importing,
+      };
+    case "set-drag-over":
+      return {
+        ...state,
+        dragOver: action.dragOver,
+      };
+    default:
+      return state;
+  }
+}
+
+function parsePreviewRows(text: string): PreviewRow[] {
+  const lines = text.split(/\r?\n/).filter((line) => line.trim() !== "");
+  const previewRows: PreviewRow[] = [];
+  const seenRows = new Map<string, number>();
+
+  for (let rowIndex = 0; rowIndex < Math.min(6, lines.length); rowIndex++) {
+    const fields: string[] = [];
+    let field = "";
+    let inQuotes = false;
+
+    for (let columnIndex = 0; columnIndex < lines[rowIndex].length; columnIndex++) {
+      const char = lines[rowIndex][columnIndex];
+      if (inQuotes) {
+        if (char === '"') {
+          if (
+            columnIndex + 1 < lines[rowIndex].length &&
+            lines[rowIndex][columnIndex + 1] === '"'
+          ) {
+            field += '"';
+            columnIndex++;
+          } else {
+            inQuotes = false;
+          }
+        } else {
+          field += char;
+        }
+      } else if (char === '"') {
+        inQuotes = true;
+      } else if (char === ",") {
+        fields.push(field.trim());
+        field = "";
+      } else {
+        field += char;
+      }
+    }
+
+    fields.push(field.trim());
+
+    const rowKey = fields.join("|") || "empty-row";
+    const rowCount = (seenRows.get(rowKey) ?? 0) + 1;
+    seenRows.set(rowKey, rowCount);
+    const rowId = `${rowKey}-${rowCount}`;
+
+    previewRows.push({
+      id: rowId,
+      cells: fields.map((value, columnIndex) => ({
+        id: `${rowId}-cell-${columnIndex}-${value || "empty"}`,
+        value,
+      })),
+    });
+  }
+
+  return previewRows;
+}
+
 export function ImportDialog({ entityType }: ImportDialogProps) {
   const [open, setOpen] = useState(false);
-  const [file, setFile] = useState<File | null>(null);
-  const [csvContent, setCsvContent] = useState<string>("");
-  const [preview, setPreview] = useState<string[][]>([]);
-  const [importing, setImporting] = useState(false);
-  const [result, setResult] = useState<ImportResult | null>(null);
-  const [dragOver, setDragOver] = useState(false);
+  const [state, dispatch] = useReducer(importDialogReducer, INITIAL_STATE);
   const inputRef = useRef<HTMLInputElement>(null);
 
   function reset() {
-    setFile(null);
-    setCsvContent("");
-    setPreview([]);
-    setResult(null);
-    setImporting(false);
-    setDragOver(false);
+    dispatch({ type: "reset" });
   }
 
   function handleOpenChange(value: boolean) {
@@ -58,50 +179,15 @@ export function ImportDialog({ entityType }: ImportDialogProps) {
       return;
     }
 
-    setFile(f);
-    setResult(null);
-
     const reader = new FileReader();
     reader.onload = (e) => {
       const text = e.target?.result as string;
-      setCsvContent(text);
-
-      // Parse preview (first 6 rows: header + 5 data rows)
-      const lines = text.split(/\r?\n/).filter((l) => l.trim() !== "");
-      const previewRows: string[][] = [];
-      for (let i = 0; i < Math.min(6, lines.length); i++) {
-        // Simple split for preview (handles basic cases)
-        const fields: string[] = [];
-        let field = "";
-        let inQuotes = false;
-        for (let j = 0; j < lines[i].length; j++) {
-          const char = lines[i][j];
-          if (inQuotes) {
-            if (char === '"') {
-              if (j + 1 < lines[i].length && lines[i][j + 1] === '"') {
-                field += '"';
-                j++;
-              } else {
-                inQuotes = false;
-              }
-            } else {
-              field += char;
-            }
-          } else {
-            if (char === '"') {
-              inQuotes = true;
-            } else if (char === ",") {
-              fields.push(field.trim());
-              field = "";
-            } else {
-              field += char;
-            }
-          }
-        }
-        fields.push(field.trim());
-        previewRows.push(fields);
-      }
-      setPreview(previewRows);
+      dispatch({
+        type: "file-loaded",
+        file: f,
+        csvContent: text,
+        preview: parsePreviewRows(text),
+      });
     };
     reader.readAsText(f);
   }, []);
@@ -113,40 +199,40 @@ export function ImportDialog({ entityType }: ImportDialogProps) {
 
   function handleDrop(e: React.DragEvent) {
     e.preventDefault();
-    setDragOver(false);
+    dispatch({ type: "set-drag-over", dragOver: false });
     const f = e.dataTransfer.files?.[0];
     if (f) processFile(f);
   }
 
   function handleDragOver(e: React.DragEvent) {
     e.preventDefault();
-    setDragOver(true);
+    dispatch({ type: "set-drag-over", dragOver: true });
   }
 
   function handleDragLeave(e: React.DragEvent) {
     e.preventDefault();
-    setDragOver(false);
+    dispatch({ type: "set-drag-over", dragOver: false });
   }
 
   async function handleImport() {
-    if (!csvContent) return;
+    if (!state.csvContent) return;
 
-    setImporting(true);
+    dispatch({ type: "set-importing", importing: true });
     try {
       let importResult: ImportResult;
       switch (entityType) {
         case "companies":
-          importResult = await importCompanies(csvContent);
+          importResult = await importCompanies(state.csvContent);
           break;
         case "contacts":
-          importResult = await importContacts(csvContent);
+          importResult = await importContacts(state.csvContent);
           break;
         case "deals":
-          importResult = await importDeals(csvContent);
+          importResult = await importDeals(state.csvContent);
           break;
       }
 
-      setResult(importResult);
+      dispatch({ type: "set-result", result: importResult });
 
       if (importResult.created > 0) {
         toast.success(
@@ -159,12 +245,14 @@ export function ImportDialog({ entityType }: ImportDialogProps) {
     } catch {
       toast.error(`Failed to import ${entityType}`);
     } finally {
-      setImporting(false);
+      dispatch({ type: "set-importing", importing: false });
     }
   }
 
   const entityLabel =
     entityType.charAt(0).toUpperCase() + entityType.slice(1);
+  const previewHeader = state.preview[0];
+  const previewRows = state.preview.slice(1);
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -182,12 +270,13 @@ export function ImportDialog({ entityType }: ImportDialogProps) {
           </DialogDescription>
         </DialogHeader>
 
-        {!result ? (
+        {!state.result ? (
           <div className="space-y-4">
             {/* File Upload Area */}
-            <div
-              className={`flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-8 transition-colors ${
-                dragOver
+            <button
+              type="button"
+              className={`flex w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-8 text-left transition-colors ${
+                state.dragOver
                   ? "border-primary bg-primary/5"
                   : "border-muted-foreground/25 hover:border-primary/50"
               }`}
@@ -198,49 +287,49 @@ export function ImportDialog({ entityType }: ImportDialogProps) {
             >
               <Upload className="mb-2 h-8 w-8 text-muted-foreground" />
               <p className="text-sm font-medium">
-                {file ? file.name : "Drop a CSV file here or click to browse"}
+                {state.file ? state.file.name : "Drop a CSV file here or click to browse"}
               </p>
               <p className="mt-1 text-xs text-muted-foreground">
                 Only .csv files are supported
               </p>
-              <input
-                ref={inputRef}
-                type="file"
-                accept=".csv"
-                onChange={handleFileChange}
-                className="hidden"
-              />
-            </div>
+            </button>
+            <input
+              ref={inputRef}
+              type="file"
+              accept=".csv"
+              onChange={handleFileChange}
+              className="hidden"
+            />
 
             {/* Preview Table */}
-            {preview.length > 0 && (
+            {state.preview.length > 0 && previewHeader && (
               <div className="space-y-2">
                 <p className="text-sm font-medium">
-                  Preview (first {Math.min(preview.length - 1, 5)} rows)
+                  Preview (first {Math.min(previewRows.length, 5)} rows)
                 </p>
                 <div className="overflow-x-auto rounded-md border">
                   <table className="w-full text-xs">
                     <thead>
                       <tr className="border-b bg-muted/50">
-                        {preview[0].map((header, i) => (
+                        {previewHeader.cells.map((header) => (
                           <th
-                            key={i}
+                            key={header.id}
                             className="whitespace-nowrap px-3 py-2 text-left font-medium"
                           >
-                            {header}
+                            {header.value}
                           </th>
                         ))}
                       </tr>
                     </thead>
                     <tbody>
-                      {preview.slice(1).map((row, i) => (
-                        <tr key={i} className="border-b last:border-0">
-                          {row.map((cell, j) => (
+                      {previewRows.map((row) => (
+                        <tr key={row.id} className="border-b last:border-0">
+                          {row.cells.map((cell) => (
                             <td
-                              key={j}
+                              key={cell.id}
                               className="max-w-[150px] truncate whitespace-nowrap px-3 py-2"
                             >
-                              {cell}
+                              {cell.value}
                             </td>
                           ))}
                         </tr>
@@ -261,9 +350,9 @@ export function ImportDialog({ entityType }: ImportDialogProps) {
               </Button>
               <Button
                 onClick={handleImport}
-                disabled={!file || importing}
+                disabled={!state.file || state.importing}
               >
-                {importing ? "Importing..." : "Import"}
+                {state.importing ? "Importing..." : "Import"}
               </Button>
             </DialogFooter>
           </div>
@@ -272,14 +361,14 @@ export function ImportDialog({ entityType }: ImportDialogProps) {
             {/* Results */}
             <div className="rounded-lg border p-4">
               <p className="text-sm font-medium">
-                {result.created} {entityType} created
-                {result.errors.length > 0 &&
-                  `, ${result.errors.length} errors`}
+                {state.result.created} {entityType} created
+                {state.result.errors.length > 0 &&
+                  `, ${state.result.errors.length} errors`}
               </p>
             </div>
 
             {/* Error List */}
-            {result.errors.length > 0 && (
+            {state.result.errors.length > 0 && (
               <div className="space-y-2">
                 <p className="text-sm font-medium text-destructive">Errors</p>
                 <div className="max-h-[200px] overflow-y-auto rounded-md border">
@@ -295,8 +384,11 @@ export function ImportDialog({ entityType }: ImportDialogProps) {
                       </tr>
                     </thead>
                     <tbody>
-                      {result.errors.map((err, i) => (
-                        <tr key={i} className="border-b last:border-0">
+                      {state.result.errors.map((err) => (
+                        <tr
+                          key={`${err.row}-${err.message}`}
+                          className="border-b last:border-0"
+                        >
                           <td className="px-3 py-2">{err.row}</td>
                           <td className="px-3 py-2">{err.message}</td>
                         </tr>

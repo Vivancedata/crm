@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 import * as Popover from "@radix-ui/react-popover";
 import { Bell, CheckSquare, Briefcase, AlertCircle } from "lucide-react";
@@ -29,12 +29,15 @@ export function NotificationsPopover() {
     }
   }, []);
 
-  // Fetch notifications when popover opens
-  useEffect(() => {
-    if (open) {
-      fetchNotifications();
-    }
-  }, [open, fetchNotifications]);
+  const handleOpenChange = useCallback(
+    (nextOpen: boolean) => {
+      setOpen(nextOpen);
+      if (nextOpen) {
+        void fetchNotifications();
+      }
+    },
+    [fetchNotifications]
+  );
 
   function navigate(href: string) {
     setOpen(false);
@@ -42,9 +45,12 @@ export function NotificationsPopover() {
   }
 
   return (
-    <Popover.Root open={open} onOpenChange={setOpen}>
+    <Popover.Root open={open} onOpenChange={handleOpenChange}>
       <Popover.Trigger asChild>
-        <button className="relative rounded-lg p-2 hover:bg-accent transition-colors">
+        <button
+          type="button"
+          className="relative rounded-lg p-2 hover:bg-accent transition-colors"
+        >
           <Bell className="h-5 w-5 text-muted-foreground" />
           {data && data.count > 0 && (
             <span className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[10px] font-medium text-destructive-foreground">
@@ -98,6 +104,7 @@ export function NotificationsPopover() {
               data.items.map((item) => (
                 <button
                   key={`${item.type}-${item.id}`}
+                  type="button"
                   onClick={() => navigate(item.href)}
                   className="flex w-full items-start gap-3 px-4 py-3 text-left hover:bg-accent transition-colors"
                 >
@@ -139,6 +146,7 @@ export function NotificationsPopover() {
           {data && data.count > 0 && (
             <div className="border-t px-4 py-2">
               <button
+                type="button"
                 onClick={() => navigate("/tasks")}
                 className="text-xs font-medium text-primary hover:underline"
               >

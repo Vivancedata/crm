@@ -1,22 +1,32 @@
 "use client";
 
-import {
-  PieChart,
-  Pie,
-  Cell,
-  Tooltip,
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-} from "recharts";
+import type { ComponentType } from "react";
+import dynamic from "next/dynamic";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+
+type RechartsComponent = ComponentType<Record<string, unknown>>;
+
+function dynamicRechartsComponent(name: string) {
+  return dynamic(async () => {
+    const recharts = await import("recharts");
+    return recharts[name as keyof typeof recharts] as RechartsComponent;
+  }, { ssr: false });
+}
+
+const PieChart = dynamicRechartsComponent("PieChart");
+const Pie = dynamicRechartsComponent("Pie");
+const Cell = dynamicRechartsComponent("Cell");
+const ChartTooltip = dynamicRechartsComponent("Tooltip");
+const ResponsiveContainer = dynamicRechartsComponent("ResponsiveContainer");
+const BarChart = dynamicRechartsComponent("BarChart");
+const Bar = dynamicRechartsComponent("Bar");
+const XAxis = dynamicRechartsComponent("XAxis");
+const YAxis = dynamicRechartsComponent("YAxis");
 
 interface ActivityByType {
   name: string;
@@ -131,7 +141,7 @@ export function ActivityChart({ byType, byDay }: ActivityChartProps) {
                       />
                     ))}
                   </Pie>
-                  <Tooltip content={<TypeTooltip />} />
+                  <ChartTooltip content={<TypeTooltip />} />
                 </PieChart>
               </ResponsiveContainer>
               <div className="mt-2 grid grid-cols-2 gap-2">
@@ -182,7 +192,7 @@ export function ActivityChart({ byType, byDay }: ActivityChartProps) {
                   stroke="hsl(var(--muted-foreground))"
                   allowDecimals={false}
                 />
-                <Tooltip content={<DayTooltip />} />
+                <ChartTooltip content={<DayTooltip />} />
                 <Bar
                   dataKey="count"
                   fill="#3b82f6"

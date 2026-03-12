@@ -1,7 +1,10 @@
 import { currentUser } from "@clerk/nextjs";
+import { isClerkServerConfigured } from "@/lib/clerk-config";
 import { prisma } from "@/lib/prisma";
 
-export async function getCurrentUser() {
+async function getCurrentUser() {
+  if (!isClerkServerConfigured()) return null;
+
   const clerkUser = await currentUser();
   if (!clerkUser) return null;
 

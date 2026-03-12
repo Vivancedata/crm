@@ -1,5 +1,6 @@
 "use client";
 
+import Image, { type ImageLoaderProps } from "next/image";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -14,6 +15,8 @@ interface ProfileTabProps {
   };
 }
 
+const avatarLoader = ({ src }: ImageLoaderProps) => src;
+
 export function ProfileTab({ user }: ProfileTabProps) {
   return (
     <div className="space-y-4">
@@ -23,13 +26,16 @@ export function ProfileTab({ user }: ProfileTabProps) {
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Avatar + Name */}
-            <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4">
             {user.avatar ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
+              <Image
+                loader={avatarLoader}
                 src={user.avatar}
                 alt={user.name ?? "User avatar"}
+                width={64}
+                height={64}
                 className="h-16 w-16 rounded-full object-cover"
+                unoptimized
               />
             ) : (
               <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary text-primary-foreground text-xl font-bold">

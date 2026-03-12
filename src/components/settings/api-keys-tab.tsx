@@ -13,61 +13,74 @@ interface ApiKeyInfo {
   configured: boolean;
 }
 
+interface ApiKeysTabState {
+  keys: ApiKeyInfo[];
+  loading: boolean;
+}
+
+const LOADING_KEY_ROWS = ["resend", "anthropic"] as const;
+
 export function ApiKeysTab() {
-  const [keys, setKeys] = useState<ApiKeyInfo[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [state, setState] = useState<ApiKeysTabState>({
+    keys: [],
+    loading: true,
+  });
 
   useEffect(() => {
     async function fetchStatus() {
       try {
         const status = await getApiKeyStatus();
-        setKeys([
-          {
-            name: "Resend",
-            envVar: "RESEND_API_KEY",
-            description: "Email delivery service for sending transactional emails.",
-            configured: status.resend,
-          },
-          {
-            name: "Anthropic",
-            envVar: "ANTHROPIC_API_KEY",
-            description: "AI model provider for deal insights and email drafting.",
-            configured: status.anthropic,
-          },
-        ]);
+        setState({
+          loading: false,
+          keys: [
+            {
+              name: "Resend",
+              envVar: "RESEND_API_KEY",
+              description: "Email delivery service for sending transactional emails.",
+              configured: status.resend,
+            },
+            {
+              name: "Anthropic",
+              envVar: "ANTHROPIC_API_KEY",
+              description: "AI model provider for deal insights and email drafting.",
+              configured: status.anthropic,
+            },
+          ],
+        });
       } catch {
         // Silently fail — keys will show as not configured
-        setKeys([
-          {
-            name: "Resend",
-            envVar: "RESEND_API_KEY",
-            description: "Email delivery service for sending transactional emails.",
-            configured: false,
-          },
-          {
-            name: "Anthropic",
-            envVar: "ANTHROPIC_API_KEY",
-            description: "AI model provider for deal insights and email drafting.",
-            configured: false,
-          },
-        ]);
-      } finally {
-        setLoading(false);
+        setState({
+          loading: false,
+          keys: [
+            {
+              name: "Resend",
+              envVar: "RESEND_API_KEY",
+              description: "Email delivery service for sending transactional emails.",
+              configured: false,
+            },
+            {
+              name: "Anthropic",
+              envVar: "ANTHROPIC_API_KEY",
+              description: "AI model provider for deal insights and email drafting.",
+              configured: false,
+            },
+          ],
+        });
       }
     }
     fetchStatus();
   }, []);
 
-  if (loading) {
+  if (state.loading) {
     return (
       <Card>
         <CardHeader>
           <CardTitle>API Keys & Integrations</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          {[1, 2].map((i) => (
+          {LOADING_KEY_ROWS.map((rowKey) => (
             <div
-              key={i}
+              key={rowKey}
               className="flex items-center justify-between rounded-lg border p-4"
             >
               <div className="space-y-1">
@@ -95,7 +108,7 @@ export function ApiKeysTab() {
             them.
           </p>
 
-          {keys.map((key) => (
+          {state.keys.map((key) => (
             <div
               key={key.envVar}
               className="flex items-center justify-between rounded-lg border p-4"
