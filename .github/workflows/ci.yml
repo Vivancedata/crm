@@ -1,0 +1,168 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  NODE_VERSION: '20'
+  BASE_BRANCH: ${{ github.base_ref || github.event.repository.default_branch }}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npm run lint
+
+  typecheck:
+    name: Type Check
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run TypeScript
+        run: npm run type-check
+
+  react_doctor:
+    name: React Doctor (100/100)
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Fetch base branch for diff scan
+        run: git fetch origin "${BASE_BRANCH}" --depth=1
+
+      - name: Enforce React Doctor score
+        env:
+          REACT_DOCTOR_DIFF_BASE: origin/${{ env.BASE_BRANCH }}
+        run: npm run react-doctor:ci
+
+  coverage:
+    name: Test Coverage (>=85%)
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run coverage
+        run: npm run test:coverage
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    needs: [coverage, typecheck, react_doctor]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build application
+        run: npm run build
+
+  lighthouse:
+    name: Lighthouse (100/100/100/100)
+    runs-on: ubuntu-latest
+    needs: [coverage, typecheck, react_doctor]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build application
+        run: npm run build
+
+      - name: Start application
+        run: |
+          npm run start -- -p 3000 > /tmp/crm.log 2>&1 &
+          echo $! > /tmp/crm.pid
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:3000/sign-in > /dev/null; then
+              exit 0
+            fi
+            sleep 2
+          done
+          cat /tmp/crm.log
+          exit 1
+
+      - name: Enforce Lighthouse scores
+        run: npm run lighthouse:ci
+
+      - name: Stop application
+        if: always()
+        run: |
+          if [ -f /tmp/crm.pid ]; then
+            kill "$(cat /tmp/crm.pid)" || true
+          fi
