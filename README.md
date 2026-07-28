@@ -1,5 +1,9 @@
 # Vivancedata CRM
 
+<p align="center">
+  <img src="docs/assets/hero.png" alt="crm preview" width="640">
+</p>
+
 A modern CRM built for AI consulting businesses, specifically designed to serve startups and blue-collar industries (construction, HVAC, manufacturing, logistics, etc.).
 
 ---
