@@ -5,7 +5,10 @@ const config: Config = {
   darkMode: ["class"],
   content: [
     "./src/**/*.{js,ts,jsx,tsx,mdx}",
-    "../ui/src/**/*.{ts,tsx}",
+    // The package is resolved from node_modules; a sibling ../ui does not
+    // exist when this repo is built on its own, which is what broke the
+    // vivancedata deploy for five months.
+    "./node_modules/@vivancedata/ui/src/**/*.{ts,tsx}",
   ],
   theme: {
     container: {
