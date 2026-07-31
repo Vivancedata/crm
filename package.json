@@ -61,18 +61,18 @@
     "zod": "^3.22.0"
   },
   "devDependencies": {
-    "@types/node": "^20.11.0",
+    "@types/node": "^26.1.2",
     "@types/react": "^18.2.48",
     "@types/react-dom": "^18.2.18",
-    "autoprefixer": "^10.4.17",
-    "eslint": "^9.0.0",
-    "eslint-config-next": "^15.5.12",
-    "postcss": "^8.4.33",
-    "prisma": "^5.8.0",
-    "tailwindcss": "^3.4.1",
+    "autoprefixer": "^10.5.4",
+    "eslint": "^10.8.0",
+    "eslint-config-next": "^16.2.12",
+    "postcss": "^8.5.23",
+    "prisma": "^7.9.1",
+    "tailwindcss": "^4.3.3",
     "tailwindcss-animate": "^1.0.7",
-    "tsx": "^4.7.0",
-    "typescript": "^5.3.3"
+    "tsx": "^4.23.1",
+    "typescript": "^7.0.2"
   },
   "overrides": {
     "cookie": "^0.7.0"
