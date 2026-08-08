@@ -51,7 +51,7 @@ The Prisma schema (`prisma/schema.prisma`) models a CRM pipeline: User → Compa
 
 ### Design System
 
-Uses `@vivancedata/ui` (GitHub dependency) with a neumorphic design language. Tailwind is configured with CSS custom properties (`hsl(var(--...))`) for theming. Custom shadow utilities: `shadow-neu`, `shadow-neu-sm`, `shadow-neu-lg`, `shadow-neu-inset`. The tailwind content path includes `../ui/src/**/*.{ts,tsx}` for the external package.
+Self-contained shadcn/ui components under `src/components/ui/` with a neumorphic design language — this repo does **not** depend on `@vivancedata/ui` (it declared the package for months without importing anything from it; the dep was removed). Tailwind is configured with CSS custom properties (`hsl(var(--...))`) for theming. Custom shadow utilities: `shadow-neu`, `shadow-neu-sm`, `shadow-neu-lg`, `shadow-neu-inset`.
 
 ### Path Alias
 
@@ -66,4 +66,4 @@ See `.env.example` for full list including Clerk redirect URLs.
 
 ## Deployment
 
-Vercel with `--legacy-peer-deps` (configured in `vercel.json` and `.npmrc`). The `@vivancedata/ui` package is pulled from GitHub.
+Vercel with `--legacy-peer-deps` (configured in `vercel.json` and `.npmrc`).
