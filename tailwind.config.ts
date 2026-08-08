@@ -3,13 +3,7 @@ import tailwindcssAnimate from "tailwindcss-animate";
 
 const config: Config = {
   darkMode: ["class"],
-  content: [
-    "./src/**/*.{js,ts,jsx,tsx,mdx}",
-    // The package is resolved from node_modules; a sibling ../ui does not
-    // exist when this repo is built on its own, which is what broke the
-    // vivancedata deploy for five months.
-    "./node_modules/@vivancedata/ui/src/**/*.{ts,tsx}",
-  ],
+  content: ["./src/**/*.{js,ts,jsx,tsx,mdx}"],
   theme: {
     container: {
       center: true,
