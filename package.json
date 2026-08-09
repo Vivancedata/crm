@@ -20,7 +20,9 @@
     "db:status": "prisma migrate status",
     "db:studio": "prisma studio",
     "db:seed": "tsx prisma/seed.ts",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "db:seed:outreach": "tsx prisma/seed-outreach-templates.ts",
+    "prospects:import": "tsx scripts/import-prospects.ts"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^3.0.44",
