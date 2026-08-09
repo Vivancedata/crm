@@ -76,12 +76,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Fetch base branch for diff scan
-        run: git fetch origin "${BASE_BRANCH}" --depth=1
-
-      - name: Enforce React Doctor score
-        env:
-          REACT_DOCTOR_DIFF_BASE: origin/${{ env.BASE_BRANCH }}
+      # The ratchet scores the whole project, so there is no base branch to
+      # diff against and nothing to fetch. The previous diff scan is what made
+      # the score depend on how many files a PR touched.
+      - name: Enforce React Doctor ratchet
         run: npm run react-doctor:ci
 
   coverage:
