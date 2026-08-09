@@ -144,7 +144,7 @@ export function RevenueChart({
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <Card variant="neu">
+        <Card>
           <CardHeader>
             <CardTitle>Revenue by Service Type</CardTitle>
           </CardHeader>
@@ -208,7 +208,7 @@ export function RevenueChart({
           </CardContent>
         </Card>
 
-        <Card variant="neu">
+        <Card>
           <CardHeader>
             <CardTitle>Won Revenue (Last 6 Months)</CardTitle>
           </CardHeader>

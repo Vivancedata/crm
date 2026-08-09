@@ -1,9 +1,25 @@
 import type { Config } from "tailwindcss";
-import tailwindcssAnimate from "tailwindcss-animate";
+import vivanceTailwindPreset from "@vivancedata/ui/tailwind";
 
+/**
+ * The design system arrives via the preset, matching vivancedata and learn.
+ *
+ * This file previously carried its own colour, spacing, radius and shadow
+ * scales, and the colours in it were not this org's -- they were an exact copy
+ * of the lscaturchio.xyz identity (warm paper `38 25% 97%`, forest green
+ * `152 52% 20%`) sitting under a comment that called them the "Vivancedata
+ * Color Palette". Three products, two design languages.
+ *
+ * Only genuinely app-specific things belong in `extend` below. Anything that
+ * should look the same across the marketing site, the learning platform and
+ * this dashboard belongs in @vivancedata/ui instead.
+ */
 const config: Config = {
-  darkMode: ["class"],
-  content: ["./src/**/*.{js,ts,jsx,tsx,mdx}"],
+  presets: [vivanceTailwindPreset],
+  content: [
+    "./src/**/*.{js,ts,jsx,tsx,mdx}",
+    "./node_modules/@vivancedata/ui/src/**/*.{ts,tsx}",
+  ],
   theme: {
     container: {
       center: true,
@@ -12,90 +28,7 @@ const config: Config = {
         "2xl": "1400px",
       },
     },
-    extend: {
-      spacing: {
-        xs: "4px",
-        sm: "8px",
-        md: "16px",
-        lg: "24px",
-        xl: "32px",
-      },
-      borderRadius: {
-        sm: "8px",
-        md: "12px",
-        lg: "16px",
-        xl: "24px",
-      },
-      colors: {
-        border: "hsl(var(--border))",
-        input: "hsl(var(--input))",
-        ring: "hsl(var(--ring))",
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
-        primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
-        },
-        secondary: {
-          DEFAULT: "hsl(var(--secondary))",
-          foreground: "hsl(var(--secondary-foreground))",
-        },
-        destructive: {
-          DEFAULT: "hsl(var(--destructive))",
-          foreground: "hsl(var(--destructive-foreground))",
-        },
-        muted: {
-          DEFAULT: "hsl(var(--muted))",
-          foreground: "hsl(var(--muted-foreground))",
-        },
-        accent: {
-          DEFAULT: "hsl(var(--accent))",
-          foreground: "hsl(var(--accent-foreground))",
-        },
-        popover: {
-          DEFAULT: "hsl(var(--popover))",
-          foreground: "hsl(var(--popover-foreground))",
-        },
-        card: {
-          DEFAULT: "hsl(var(--card))",
-          foreground: "hsl(var(--card-foreground))",
-        },
-        success: {
-          DEFAULT: "hsl(var(--success))",
-          foreground: "hsl(var(--success-foreground))",
-        },
-        warning: {
-          DEFAULT: "hsl(var(--warning))",
-          foreground: "hsl(var(--warning-foreground))",
-        },
-        info: {
-          DEFAULT: "hsl(var(--info))",
-          foreground: "hsl(var(--info-foreground))",
-        },
-      },
-      boxShadow: {
-        neu: "var(--neu-shadow)",
-        "neu-sm": "var(--neu-shadow-sm)",
-        "neu-lg": "var(--neu-shadow-lg)",
-        "neu-inset": "var(--neu-shadow-inset)",
-      },
-      keyframes: {
-        "accordion-down": {
-          from: { height: "0" },
-          to: { height: "var(--radix-accordion-content-height)" },
-        },
-        "accordion-up": {
-          from: { height: "var(--radix-accordion-content-height)" },
-          to: { height: "0" },
-        },
-      },
-      animation: {
-        "accordion-down": "accordion-down 0.2s ease-out",
-        "accordion-up": "accordion-up 0.2s ease-out",
-      },
-    },
   },
-  plugins: [tailwindcssAnimate],
-} satisfies Config;
+};
 
 export default config;

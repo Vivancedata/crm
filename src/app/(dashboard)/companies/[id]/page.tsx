@@ -132,7 +132,7 @@ export default async function CompanyDetailPage({ params }: CompanyDetailPagePro
 
         <TabsContent value="overview" className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-2">
-            <Card variant="neu">
+            <Card>
               <CardContent className="flex items-center gap-4 p-6">
                 <div className="rounded-lg bg-primary/10 p-3">
                   <Users className="h-5 w-5 text-primary" />
@@ -143,7 +143,7 @@ export default async function CompanyDetailPage({ params }: CompanyDetailPagePro
                 </div>
               </CardContent>
             </Card>
-            <Card variant="neu">
+            <Card>
               <CardContent className="flex items-center gap-4 p-6">
                 <div className="rounded-lg bg-primary/10 p-3">
                   <Briefcase className="h-5 w-5 text-primary" />

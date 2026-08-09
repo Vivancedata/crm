@@ -113,7 +113,7 @@ export function ActivityChart({ byType, byDay }: ActivityChartProps) {
 
   return (
     <div className="grid gap-6 lg:grid-cols-2">
-      <Card variant="neu">
+      <Card>
         <CardHeader>
           <CardTitle>Activities by Type</CardTitle>
         </CardHeader>
@@ -173,7 +173,7 @@ export function ActivityChart({ byType, byDay }: ActivityChartProps) {
         </CardContent>
       </Card>
 
-      <Card variant="neu">
+      <Card>
         <CardHeader>
           <CardTitle>Daily Activity (Last 30 Days)</CardTitle>
         </CardHeader>

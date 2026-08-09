@@ -88,9 +88,11 @@ export function DealCard({ deal, isDragOverlay = false }: DealCardProps) {
       className={isDragging ? "opacity-50" : undefined}
     >
       <Card
-        variant="neu"
-        className={`cursor-pointer hover:shadow-neu-lg transition-shadow ${
-          isDragOverlay ? "shadow-neu-lg ring-2 ring-primary/20 rotate-[2deg]" : ""
+        // Hover shifts the hairline rather than blooming a shadow. The drag
+        // overlay is the one card that genuinely floats, so it is the one that
+        // earns elevation -- level 2, the ceiling in DESIGN.md.
+        className={`cursor-pointer transition-colors hover:border-brand/40 ${
+          isDragOverlay ? "shadow-elevation-2 ring-2 ring-brand/20 rotate-[2deg]" : ""
         }`}
         role="button"
         tabIndex={0}

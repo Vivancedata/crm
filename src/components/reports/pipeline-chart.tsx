@@ -73,7 +73,7 @@ function CustomTooltip({
 export function PipelineChart({ data }: PipelineChartProps) {
   if (data.length === 0) {
     return (
-      <Card variant="neu">
+      <Card>
         <CardHeader>
           <CardTitle>Pipeline by Stage</CardTitle>
         </CardHeader>
@@ -87,7 +87,7 @@ export function PipelineChart({ data }: PipelineChartProps) {
   }
 
   return (
-    <Card variant="neu">
+    <Card>
       <CardHeader>
         <CardTitle>Pipeline by Stage</CardTitle>
       </CardHeader>
