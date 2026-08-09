@@ -19,7 +19,7 @@ export function PipelineOverview({ stages }: PipelineOverviewProps) {
   const totalValue = stages.reduce((acc, stage) => acc + stage.value, 0);
 
   return (
-    <Card variant="neu">
+    <Card>
       <CardHeader>
         <CardTitle>Pipeline Overview</CardTitle>
       </CardHeader>

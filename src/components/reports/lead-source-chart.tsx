@@ -111,7 +111,7 @@ export function LeadSourceChart({ bySource, byWeek }: LeadSourceChartProps) {
 
   return (
     <div className="grid gap-6 lg:grid-cols-2">
-      <Card variant="neu">
+      <Card>
         <CardHeader>
           <CardTitle>Contacts by Source</CardTitle>
         </CardHeader>
@@ -171,7 +171,7 @@ export function LeadSourceChart({ bySource, byWeek }: LeadSourceChartProps) {
         </CardContent>
       </Card>
 
-      <Card variant="neu">
+      <Card>
         <CardHeader>
           <CardTitle>New Contacts (Last 12 Weeks)</CardTitle>
         </CardHeader>

@@ -25,7 +25,7 @@ const priorityColors: Record<string, "secondary" | "info" | "warning" | "destruc
 
 export function UpcomingTasks({ tasks }: UpcomingTasksProps) {
   return (
-    <Card variant="neu">
+    <Card>
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>Upcoming Tasks</CardTitle>
         <Badge variant="outline">{tasks.length} pending</Badge>

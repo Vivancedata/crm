@@ -1,33 +1,25 @@
 import * as React from "react";
-import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
-const cardVariants = cva(
-  "rounded-lg border text-card-foreground",
-  {
-    variants: {
-      variant: {
-        default: "bg-card",
-        neu: "shadow-neu bg-background border-transparent",
-        glass: "glass border-transparent",
-      },
-    },
-    defaultVariants: {
-      variant: "default",
-    },
-  }
-);
+/**
+ * One card, defined by a hairline.
+ *
+ * There were three variants. `neu` painted a neumorphic dual-direction shadow
+ * with a transparent border, `glass` a backdrop blur -- both from a decorative
+ * system DESIGN.md had already retired, and `glass` was never used anywhere.
+ * `neu` was used in thirteen files, so it was doing the work of the default
+ * while the actual default sat unused.
+ *
+ * The system's elevation rule is a hairline first and a shadow only when a
+ * surface genuinely floats, with flat as the default. That is what this is.
+ */
+const cardBase = "rounded-md border border-border bg-card text-card-foreground";
 
-const Card = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement> & VariantProps<typeof cardVariants>
->(({ className, variant, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn(cardVariants({ variant }), className)}
-    {...props}
-  />
-));
+const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+  ({ className, ...props }, ref) => (
+    <div ref={ref} className={cn(cardBase, className)} {...props} />
+  )
+);
 Card.displayName = "Card";
 
 const CardHeader = React.forwardRef<

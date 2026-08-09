@@ -23,7 +23,7 @@ export function StatsCard({
     trend === "up" ? TrendingUp : trend === "down" ? TrendingDown : Minus;
 
   return (
-    <Card variant="neu">
+    <Card>
       <CardContent className="p-6">
         <div className="flex items-center justify-between">
           <div>

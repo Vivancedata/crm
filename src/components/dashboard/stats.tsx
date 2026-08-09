@@ -49,7 +49,7 @@ export function DashboardStats({
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
       {stats.map((stat) => (
-        <Card key={stat.name} variant="neu">
+        <Card key={stat.name}>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>

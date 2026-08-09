@@ -68,7 +68,7 @@ export function DealInsights({ dealId }: DealInsightsProps) {
 
   if (!insights && !loading && !error) {
     return (
-      <Card variant="neu">
+      <Card>
         <CardContent className="flex items-center justify-center p-6">
           <Button onClick={handleGenerate} variant="outline" className="gap-2">
             <Sparkles className="h-4 w-4" />
@@ -81,7 +81,7 @@ export function DealInsights({ dealId }: DealInsightsProps) {
 
   if (loading) {
     return (
-      <Card variant="neu">
+      <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Sparkles className="h-5 w-5 animate-pulse text-primary" />
@@ -107,7 +107,7 @@ export function DealInsights({ dealId }: DealInsightsProps) {
 
   if (error) {
     return (
-      <Card variant="neu">
+      <Card>
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
             <p className="text-sm text-destructive">{error}</p>
@@ -135,7 +135,7 @@ export function DealInsights({ dealId }: DealInsightsProps) {
   const RiskIcon = risk.icon;
 
   return (
-    <Card variant="neu">
+    <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Sparkles className="h-5 w-5 text-primary" />

@@ -49,7 +49,7 @@ const activityColors: Record<string, string> = {
 
 export function RecentActivity({ activities }: RecentActivityProps) {
   return (
-    <Card variant="neu">
+    <Card>
       <CardHeader>
         <CardTitle>Recent Activity</CardTitle>
       </CardHeader>
