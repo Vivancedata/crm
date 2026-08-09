@@ -18,6 +18,22 @@ updates:
       interval: "weekly"
     open-pull-requests-limit: 5
     groups:
+      # The AI SDK is the one exception to "majors arrive individually",
+      # because the provider packages implement a spec version that the `ai`
+      # core defines. Split up, the majors are not merely inconvenient -- they
+      # are individually impossible: #23 bumped @ai-sdk/anthropic 3 -> 4, whose
+      # model type is LanguageModelV4, while `ai` stayed where it was and still
+      # expected LanguageModel. Type Check failed at three call sites in
+      # src/lib/actions/ai.ts and could not have passed without `ai` moving too.
+      #
+      # This does not recreate the hostage problem the note above describes:
+      # that was four unrelated migrations sharing a branch. This is one SDK
+      # whose halves only typecheck when they move together.
+      ai-sdk:
+        patterns:
+          - "ai"
+          - "@ai-sdk/*"
+        update-types: ["major", "minor", "patch"]
       development-dependencies:
         dependency-type: "development"
         update-types: ["minor", "patch"]
