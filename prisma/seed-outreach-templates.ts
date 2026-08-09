@@ -141,22 +141,32 @@ async function main(): Promise<void> {
     return;
   }
 
-  for (const template of templates) {
-    const existing = await prisma.emailTemplate.findFirst({ where: { name: template.name } });
+  // Seeded concurrently rather than in a loop. Each template is keyed by its own
+  // name and the names above are distinct, so no two of these touch the same row
+  // -- there is no ordering constraint to preserve and nothing to serialise for.
+  // `upsert` is not available here because `name` is not unique in the schema,
+  // so it stays find-then-write; that is safe for a seed script run by hand, but
+  // it would race if two copies ran at once.
+  const results = await Promise.all(
+    templates.map(async (template) => {
+      const existing = await prisma.emailTemplate.findFirst({ where: { name: template.name } });
 
-    if (existing) {
-      await prisma.emailTemplate.update({
-        where: { id: existing.id },
-        data: { subject: template.subject, body: template.body, category: template.category },
-      });
-      console.log(`updated  ${template.name}`);
-    } else {
+      if (existing) {
+        await prisma.emailTemplate.update({
+          where: { id: existing.id },
+          data: { subject: template.subject, body: template.body, category: template.category },
+        });
+        return `updated  ${template.name}`;
+      }
+
       await prisma.emailTemplate.create({
         data: { ...template, createdById: owner.id },
       });
-      console.log(`created  ${template.name}`);
-    }
-  }
+      return `created  ${template.name}`;
+    })
+  );
+
+  for (const line of results) console.log(line);
 
   console.log(`\n${templates.length} outreach templates seeded.`);
   console.log("Fill every {{placeholder}} before sending. See docs/PROSPECTING.md.\n");
