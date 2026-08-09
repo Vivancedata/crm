@@ -22,8 +22,8 @@ import {
   Phone,
   Building2,
   Briefcase,
-  Linkedin,
 } from "lucide-react";
+import { LinkedinIcon } from "@/components/brand-icons";
 
 interface ContactDetailPageProps {
   params: Promise<{ id: string }>;
@@ -153,7 +153,7 @@ export default async function ContactDetailPage({ params }: ContactDetailPagePro
         {contact.linkedin && (
           <Card>
             <CardContent className="flex items-center gap-3 p-4">
-              <Linkedin className="h-5 w-5 text-muted-foreground" />
+              <LinkedinIcon className="h-5 w-5 text-muted-foreground" />
               <a
                 href={contact.linkedin}
                 target="_blank"
