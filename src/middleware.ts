@@ -1,18 +1,28 @@
-import { authMiddleware } from "@clerk/nextjs";
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import type { NextFetchEvent, NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { isClerkServerConfigured } from "@/lib/clerk-config";
 
-const clerkMiddleware = authMiddleware({
-  publicRoutes: ["/sign-in(.*)", "/sign-up(.*)"],
+/**
+ * Clerk v7. authMiddleware and its publicRoutes option are gone; the modern
+ * shape inverts the question — protect what matches, rather than list what
+ * doesn't — so the sign-in/sign-up pages are the matcher and everything else
+ * calls auth.protect().
+ */
+const isPublicRoute = createRouteMatcher(["/sign-in(.*)", "/sign-up(.*)"]);
+
+const protectedMiddleware = clerkMiddleware(async (auth, req) => {
+  if (!isPublicRoute(req)) await auth.protect();
 });
 
 export default function middleware(request: NextRequest, event: NextFetchEvent) {
+  // Without server keys (local dev, CI) the app runs unauthenticated rather
+  // than crashing at the edge; every page then renders against an empty user.
   if (!isClerkServerConfigured()) {
     return NextResponse.next();
   }
 
-  return clerkMiddleware(request, event);
+  return protectedMiddleware(request, event);
 }
 
 export const config = {
