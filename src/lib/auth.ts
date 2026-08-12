@@ -1,4 +1,4 @@
-import { currentUser } from "@clerk/nextjs";
+import { currentUser } from "@clerk/nextjs/server";
 import { isClerkServerConfigured } from "@/lib/clerk-config";
 import { prisma } from "@/lib/prisma";
 

@@ -58,7 +58,7 @@ export default function RootLayout({
   }
 
   return (
-    <ClerkProvider publishableKey={clerkPublishableKey}>
+    <ClerkProvider publishableKey={clerkPublishableKey} afterSignOutUrl="/sign-in">
       {content}
     </ClerkProvider>
   );

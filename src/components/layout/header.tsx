@@ -24,7 +24,9 @@ export function Header() {
 
         <NotificationsPopover />
 
-        {isClerkClientConfigured() ? <UserButton afterSignOutUrl="/sign-in" /> : null}
+        {/* v7 removed UserButton's sign-out redirect props; the redirect now
+            lives on ClerkProvider (afterSignOutUrl in src/app/layout.tsx). */}
+        {isClerkClientConfigured() ? <UserButton /> : null}
       </div>
     </header>
   );
