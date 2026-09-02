@@ -49,17 +49,26 @@ export function NotificationsPopover() {
       <Popover.Trigger asChild>
         <button
           type="button"
+          aria-label={
+            data
+              ? `Notifications, ${data.count} ${data.count === 1 ? "item" : "items"}`
+              : "Notifications"
+          }
           className="relative rounded-lg p-2 hover:bg-accent transition-colors"
         >
-          <Bell className="h-5 w-5 text-muted-foreground" />
+          <Bell aria-hidden="true" className="h-5 w-5 text-muted-foreground" />
           {data && data.count > 0 && (
-            <span className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[10px] font-medium text-destructive-foreground">
+            <span
+              aria-hidden="true"
+              className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[10px] font-medium text-destructive-foreground"
+            >
               {data.count > 9 ? "9+" : data.count}
             </span>
           )}
-          {!data && (
-            <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-destructive" />
-          )}
+          {/* There used to be a red dot here whenever `data` was null -- which
+              is always, until the popover has been opened once. It claimed
+              unread items on a fresh page load regardless of whether any
+              existed, and the only way to clear it was to open it. */}
         </button>
       </Popover.Trigger>
 

@@ -14,12 +14,15 @@ const badgeVariants = cva(
         success: "border-transparent bg-success text-success-foreground",
         warning: "border-transparent bg-warning text-warning-foreground",
         info: "border-transparent bg-info text-info-foreground",
-        // Pipeline stages
-        lead: "border-transparent bg-slate-500 text-white",
-        qualified: "border-transparent bg-blue-500 text-white",
-        discovery: "border-transparent bg-purple-500 text-white",
-        proposal: "border-transparent bg-amber-500 text-white",
-        negotiation: "border-transparent bg-orange-500 text-white",
+        // Pipeline stages. One step darker than the -500 ramp they used to
+        // sit on: white on amber-500 measured 2.15:1 and on orange-500 2.80:1,
+        // both well under the 4.5:1 AA floor. These are 5.02:1 and 5.18:1,
+        // and the family stays legible next to each other.
+        lead: "border-transparent bg-slate-600 text-white",
+        qualified: "border-transparent bg-blue-600 text-white",
+        discovery: "border-transparent bg-purple-600 text-white",
+        proposal: "border-transparent bg-amber-700 text-white",
+        negotiation: "border-transparent bg-orange-700 text-white",
         won: "border-transparent bg-success text-success-foreground",
         lost: "border-transparent bg-destructive text-destructive-foreground",
       },
