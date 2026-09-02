@@ -3,13 +3,14 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge, type BadgeProps } from "@/components/ui/badge";
+import { Badge } from "@/components/ui/badge";
+import { StageBadge } from "@/components/deals/stage-badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { EditCompanyDialog } from "@/components/companies/edit-company-dialog";
 import { DeleteCompanyDialog } from "@/components/companies/delete-company-dialog";
 import { NoteList } from "@/components/notes/note-list";
 import { ActivityTimeline } from "@/components/activities/activity-timeline";
-import { INDUSTRY_LABELS, COMPANY_SIZE_LABELS, DEAL_STAGE_LABELS } from "@/lib/constants";
+import { INDUSTRY_LABELS, COMPANY_SIZE_LABELS } from "@/lib/constants";
 import { formatCurrency, formatDate, getInitials } from "@/lib/utils";
 import { ArrowLeft, Globe, Phone, MapPin, Users, Briefcase } from "lucide-react";
 
@@ -238,9 +239,7 @@ export default async function CompanyDetailPage({ params }: CompanyDetailPagePro
 	                        </Link>
 	                      </td>
 	                      <td className="px-6 py-4">
-	                        <Badge variant={deal.stage.toLowerCase() as BadgeProps["variant"]}>
-	                          {DEAL_STAGE_LABELS[deal.stage]}
-	                        </Badge>
+	                        <StageBadge stage={deal.stage} />
 	                      </td>
                       <td className="px-6 py-4">
                         {deal.value ? formatCurrency(Number(deal.value)) : "-"}

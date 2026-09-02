@@ -160,7 +160,7 @@ export function DealCard({ deal, isDragOverlay = false }: DealCardProps) {
                 ? `${deal.contact.firstName} ${deal.contact.lastName}`
                 : "No contact"}
             </span>
-            <span className="font-semibold text-primary">
+            <span className="font-semibold text-brand">
               {deal.value ? formatCurrency(Number(deal.value)) : "-"}
             </span>
           </div>

@@ -106,7 +106,7 @@ export function CreateNoteDialog({ entityType, entityId }: CreateNoteDialogProps
                       type="checkbox"
                       checked={field.value}
                       onChange={field.onChange}
-                      className="h-4 w-4 rounded border-gray-300"
+                      className="h-4 w-4 rounded-sm border-input accent-brand"
                     />
                   </FormControl>
                   <FormLabel className="cursor-pointer">Pin this note</FormLabel>
