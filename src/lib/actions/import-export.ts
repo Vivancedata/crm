@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth";
+import { toUserMessage } from "@/lib/action-error";
 import { logger } from "@/lib/logger";
 import {
   INDUSTRY_LABELS,
@@ -392,7 +393,7 @@ export async function importCompanies(csvData: string): Promise<ImportResult> {
       logger.warn("Import companies transaction failed", { action: "importCompanies", userId: user.id, error: err instanceof Error ? err.message : String(err) });
       errors.push({
         row: 0,
-        message: `Import failed: ${err instanceof Error ? err.message : "Transaction error"}. No records were created.`,
+        message: `Import failed. ${toUserMessage(err, "The import could not be saved.")} No records were created.`,
       });
       created = 0;
     }
@@ -513,7 +514,7 @@ export async function importContacts(csvData: string): Promise<ImportResult> {
       logger.warn("Import contacts transaction failed", { action: "importContacts", userId: user.id, error: err instanceof Error ? err.message : String(err) });
       errors.push({
         row: 0,
-        message: `Import failed: ${err instanceof Error ? err.message : "Transaction error"}. No records were created.`,
+        message: `Import failed. ${toUserMessage(err, "The import could not be saved.")} No records were created.`,
       });
       created = 0;
     }
@@ -683,7 +684,7 @@ export async function importDeals(csvData: string): Promise<ImportResult> {
       logger.warn("Import deals transaction failed", { action: "importDeals", userId: user.id, error: err instanceof Error ? err.message : String(err) });
       errors.push({
         row: 0,
-        message: `Import failed: ${err instanceof Error ? err.message : "Transaction error"}. No records were created.`,
+        message: `Import failed. ${toUserMessage(err, "The import could not be saved.")} No records were created.`,
       });
       created = 0;
     }
