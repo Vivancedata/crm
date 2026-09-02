@@ -35,6 +35,7 @@ import {
 import { createDeal } from "@/lib/actions/deals";
 import { dealSchema, type DealFormValues } from "@/lib/validations/deal";
 import { DEAL_STAGE_LABELS, SERVICE_TYPE_LABELS } from "@/lib/constants";
+import { ACTIVE_STAGES } from "@/lib/deal-board";
 
 interface CreateDealDialogProps {
   companies: { id: string; name: string }[];
@@ -143,8 +144,14 @@ export function CreateDealDialog({ companies, contacts }: CreateDealDialogProps)
                         <SelectTrigger><SelectValue /></SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {Object.entries(DEAL_STAGE_LABELS).map(([v, l]) => (
-                          <SelectItem key={v} value={v}>{l}</SelectItem>
+                        {/* Won and Lost were offered here, so a deal could be
+                            created already closed -- with a probability and a
+                            close date it never earned. A new deal starts on
+                            the board. */}
+                        {ACTIVE_STAGES.map((v) => (
+                          <SelectItem key={v} value={v}>
+                            {DEAL_STAGE_LABELS[v]}
+                          </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>

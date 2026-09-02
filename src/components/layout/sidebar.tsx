@@ -8,7 +8,6 @@ import {
   Users,
   Building2,
   Briefcase,
-  FolderKanban,
   CheckSquare,
   Mail,
   BarChart3,
@@ -20,7 +19,7 @@ const navigation = [
   { name: "Contacts", href: "/contacts", icon: Users },
   { name: "Companies", href: "/companies", icon: Building2 },
   { name: "Deals", href: "/deals", icon: Briefcase },
-  { name: "Projects", href: "/projects", icon: FolderKanban },
+  // No "Projects" entry: /projects has never existed and the link 404'd.
   { name: "Tasks", href: "/tasks", icon: CheckSquare },
   { name: "Emails", href: "/emails", icon: Mail },
   { name: "Reports", href: "/reports", icon: BarChart3 },
@@ -44,7 +43,7 @@ export function Sidebar() {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 space-y-1 p-4">
+      <nav aria-label="Main" className="flex-1 space-y-1 p-4">
         {navigation.map((item) => {
           const isActive = pathname === item.href || 
             (item.href !== "/" && pathname.startsWith(item.href));
@@ -53,6 +52,7 @@ export function Sidebar() {
             <Link
               key={item.name}
               href={item.href}
+              aria-current={isActive ? "page" : undefined}
               className={cn(
                 // 6px squares for app chrome, per the radius rule in DESIGN.md.
                 "flex items-center gap-3 rounded-sm px-3 py-2 text-sm font-medium transition-colors",
@@ -61,7 +61,7 @@ export function Sidebar() {
                   : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
               )}
             >
-              <item.icon className="h-5 w-5" />
+              <item.icon aria-hidden="true" className="h-5 w-5" />
               {item.name}
             </Link>
           );
@@ -69,7 +69,7 @@ export function Sidebar() {
       </nav>
 
       {/* Bottom Navigation */}
-      <div className="border-t p-4">
+      <nav aria-label="Account" className="border-t p-4">
         {bottomNavigation.map((item) => {
           const isActive = pathname === item.href;
           
@@ -77,6 +77,7 @@ export function Sidebar() {
             <Link
               key={item.name}
               href={item.href}
+              aria-current={isActive ? "page" : undefined}
               className={cn(
                 "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all",
                 isActive
@@ -84,12 +85,12 @@ export function Sidebar() {
                   : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
               )}
             >
-              <item.icon className="h-5 w-5" />
+              <item.icon aria-hidden="true" className="h-5 w-5" />
               {item.name}
             </Link>
           );
         })}
-      </div>
+      </nav>
     </aside>
   );
 }

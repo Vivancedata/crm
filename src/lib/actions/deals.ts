@@ -5,7 +5,8 @@ import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth";
 import { logger } from "@/lib/logger";
 import { dealSchema } from "@/lib/validations/deal";
-import { DEAL_STAGE_PROBABILITY } from "@/lib/constants";
+import { DEAL_STAGE_LABELS, DEAL_STAGE_PROBABILITY } from "@/lib/constants";
+import type { DealStage } from "@/lib/deal-board";
 
 export async function createDeal(formData: unknown) {
   try {
@@ -112,16 +113,12 @@ export async function updateDeal(id: string, formData: unknown) {
   }
 }
 
-export async function updateDealStage(id: string, stage: string) {
+export async function updateDealStage(id: string, stage: string, lostReason?: string) {
   try {
     const user = await requireUser();
-    const validStages = [
-      "LEAD", "QUALIFIED", "DISCOVERY", "PROPOSAL", "NEGOTIATION", "WON", "LOST",
-    ] as const;
-    type ValidStage = (typeof validStages)[number];
 
-    function isValidStage(value: string): value is ValidStage {
-      return (validStages as readonly string[]).includes(value);
+    function isValidStage(value: string): value is DealStage {
+      return value in DEAL_STAGE_LABELS;
     }
 
     if (!isValidStage(stage)) {
@@ -137,20 +134,27 @@ export async function updateDealStage(id: string, stage: string) {
       return { success: false, error: "Not found or unauthorized" };
     }
 
+    const isClosed = typedStage === "WON" || typedStage === "LOST";
+
     const deal = await prisma.deal.update({
       where: { id },
       data: {
         stage: typedStage,
         probability: DEAL_STAGE_PROBABILITY[typedStage] ?? 0,
-        actualClose:
-          typedStage === "WON" || typedStage === "LOST" ? new Date() : null,
+        actualClose: isClosed ? new Date() : null,
+        // Only LOST carries a reason. Reopening a deal drops the old one
+        // rather than leaving it attached to a live record.
+        lostReason:
+          typedStage === "LOST" ? lostReason?.trim() || existing.lostReason : null,
       },
     });
 
     await prisma.activity.create({
       data: {
         type: "DEAL_STAGE_CHANGE",
-        subject: `Deal moved to ${stage}`,
+        // The label, not the enum: the timeline used to read
+        // "Deal moved to NEGOTIATION" at people.
+        subject: `Deal moved to ${DEAL_STAGE_LABELS[typedStage]}`,
         dealId: id,
         userId: user.id,
         companyId: deal.companyId,

@@ -1,9 +1,19 @@
 "use client";
 
+import { useState } from "react";
 import { type ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "@/components/ui/data-table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { deleteEmail } from "@/lib/actions/emails";
@@ -79,35 +89,68 @@ const columns: ColumnDef<EmailWithContact>[] = [
   {
     id: "actions",
     header: "",
-    cell: ({ row }) => {
-      async function handleDelete() {
-        try {
-          const result = await deleteEmail(row.original.id);
-          if (!result.success) {
-            toast.error(result.error ?? "Failed to delete email");
-            return;
-          }
-          toast.success("Email deleted");
-        } catch {
-          toast.error("Failed to delete email");
-        }
-      }
+    cell: ({ row }) => <DeleteEmailButton email={row.original} />,
+  },
+];
 
-      return (
+/**
+ * Deleting an email used to happen on the first click of an unlabeled icon --
+ * no confirmation, no undo, and the row was gone. It is the only destructive
+ * control in the app that behaved that way.
+ */
+function DeleteEmailButton({ email }: { email: EmailWithContact }) {
+  const [open, setOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  async function handleDelete() {
+    setDeleting(true);
+    try {
+      const result = await deleteEmail(email.id);
+      if (!result.success) {
+        toast.error(result.error ?? "Couldn't delete that email.");
+        return;
+      }
+      toast.success("Email deleted");
+      setOpen(false);
+    } catch {
+      toast.error("Couldn't delete that email.");
+    } finally {
+      setDeleting(false);
+    }
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
         <Button
           variant="ghost"
           size="sm"
-          onClick={(e) => {
-            e.stopPropagation();
-            handleDelete();
-          }}
+          aria-label={`Delete email "${email.subject}"`}
+          onClick={(event) => event.stopPropagation()}
         >
-          <Trash2 className="h-4 w-4 text-muted-foreground" />
+          <Trash2 aria-hidden="true" className="h-4 w-4 text-muted-foreground" />
         </Button>
-      );
-    },
-  },
-];
+      </DialogTrigger>
+      <DialogContent onClick={(event) => event.stopPropagation()}>
+        <DialogHeader>
+          <DialogTitle>Delete this email?</DialogTitle>
+          <DialogDescription>
+            <strong>{email.subject}</strong> will be removed from the record for{" "}
+            {email.contact.firstName} {email.contact.lastName}. This cannot be undone.
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setOpen(false)} disabled={deleting}>
+            Cancel
+          </Button>
+          <Button variant="destructive" onClick={handleDelete} disabled={deleting}>
+            {deleting ? "Deleting…" : "Delete email"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
 
 interface EmailTableProps {
   emails: EmailWithContact[];
