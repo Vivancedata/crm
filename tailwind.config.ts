@@ -21,6 +21,22 @@ const config: Config = {
     "./node_modules/@vivancedata/ui/src/**/*.{ts,tsx}",
   ],
   theme: {
+    extend: {
+      colors: {
+        // The pipeline ramp, defined in src/app/globals.css. App-specific by
+        // design -- see the comment there.
+        stage: {
+          lead: "hsl(var(--stage-lead))",
+          qualified: "hsl(var(--stage-qualified))",
+          discovery: "hsl(var(--stage-discovery))",
+          proposal: "hsl(var(--stage-proposal))",
+          negotiation: "hsl(var(--stage-negotiation))",
+        },
+      },
+      width: {
+        sidebar: "var(--sidebar-width)",
+      },
+    },
     container: {
       center: true,
       padding: "2rem",

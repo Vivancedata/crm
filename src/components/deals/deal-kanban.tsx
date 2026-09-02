@@ -7,6 +7,7 @@ import { DealCard } from "@/components/deals/deal-card";
 import { formatCurrency } from "@/lib/utils";
 import { updateDealStage } from "@/lib/actions/deals";
 import { DEAL_STAGE_LABELS } from "@/lib/constants";
+import { STAGE_DOT_CLASS } from "@/components/deals/stage-badge";
 import {
   DndContext,
   DragEndEvent,
@@ -27,11 +28,11 @@ type DealWithRelations = Deal & {
 };
 
 const KANBAN_STAGES = [
-  { key: "LEAD", label: "Lead", color: "bg-slate-500", variant: "lead" as const },
-  { key: "QUALIFIED", label: "Qualified", color: "bg-blue-500", variant: "qualified" as const },
-  { key: "DISCOVERY", label: "Discovery", color: "bg-purple-500", variant: "discovery" as const },
-  { key: "PROPOSAL", label: "Proposal", color: "bg-amber-500", variant: "proposal" as const },
-  { key: "NEGOTIATION", label: "Negotiation", color: "bg-orange-500", variant: "negotiation" as const },
+  { key: "LEAD", label: "Lead", color: STAGE_DOT_CLASS.LEAD },
+  { key: "QUALIFIED", label: "Qualified", color: STAGE_DOT_CLASS.QUALIFIED },
+  { key: "DISCOVERY", label: "Discovery", color: STAGE_DOT_CLASS.DISCOVERY },
+  { key: "PROPOSAL", label: "Proposal", color: STAGE_DOT_CLASS.PROPOSAL },
+  { key: "NEGOTIATION", label: "Negotiation", color: STAGE_DOT_CLASS.NEGOTIATION },
 ] as const;
 
 type KanbanStageKey = (typeof KANBAN_STAGES)[number]["key"];
@@ -77,9 +78,9 @@ function KanbanColumn({ stageKey, label, color, deals, isOver }: KanbanColumnPro
       {/* Drop Zone */}
       <div
         ref={setNodeRef}
-        className={`min-h-[200px] space-y-3 rounded-lg p-2 transition-colors ${
+        className={`min-h-[200px] space-y-3 rounded-md p-2 transition-colors ${
           isOver
-            ? "bg-primary/5 ring-2 ring-primary/20 ring-dashed"
+            ? "bg-brand/5 ring-2 ring-dashed ring-brand/20"
             : "bg-transparent"
         }`}
       >
@@ -89,9 +90,9 @@ function KanbanColumn({ stageKey, label, color, deals, isOver }: KanbanColumnPro
 
         {deals.length === 0 && (
           <div
-            className={`rounded-lg border-2 border-dashed p-6 text-center text-sm transition-colors ${
+            className={`rounded-md border-2 border-dashed p-6 text-center text-sm transition-colors ${
               isOver
-                ? "border-primary/40 text-primary"
+                ? "border-brand/40 text-brand"
                 : "border-muted-foreground/25 text-muted-foreground"
             }`}
           >

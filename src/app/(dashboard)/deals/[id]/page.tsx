@@ -3,7 +3,8 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge, type BadgeProps } from "@/components/ui/badge";
+import { Badge } from "@/components/ui/badge";
+import { StageBadge } from "@/components/deals/stage-badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DeleteDealDialog } from "@/components/deals/delete-deal-dialog";
 import { EditDealDialog } from "@/components/deals/edit-deal-dialog";
@@ -11,7 +12,6 @@ import { NoteList } from "@/components/notes/note-list";
 import { ActivityTimeline } from "@/components/activities/activity-timeline";
 import { DealInsights } from "@/components/ai/deal-insights";
 import {
-  DEAL_STAGE_LABELS,
   SERVICE_TYPE_LABELS,
 } from "@/lib/constants";
 import { formatCurrency, formatDate } from "@/lib/utils";
@@ -80,14 +80,12 @@ export default async function DealDetailPage({ params }: DealDetailPageProps) {
           <div>
             <h1 className="text-heading-2 font-bold">{deal.title}</h1>
             <div className="mt-1 flex items-center gap-3">
-              <Badge variant={deal.stage.toLowerCase() as BadgeProps["variant"]}>
-                {DEAL_STAGE_LABELS[deal.stage]}
-              </Badge>
+              <StageBadge stage={deal.stage} />
               <Badge variant="outline">
                 {SERVICE_TYPE_LABELS[deal.serviceType]}
               </Badge>
               {deal.value && (
-                <span className="text-lg font-semibold text-primary">
+                <span className="text-lg font-semibold text-brand">
                   {formatCurrency(Number(deal.value))}
                 </span>
               )}
