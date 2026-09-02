@@ -8,6 +8,7 @@ import { formatCurrency } from "@/lib/utils";
 import { updateDealStage } from "@/lib/actions/deals";
 import { DEAL_STAGE_LABELS } from "@/lib/constants";
 import { ACTIVE_STAGES, isActiveStage, type ActiveStage, type BoardDeal } from "@/lib/deal-board";
+import { STAGE_DOT_CLASS } from "@/components/deals/stage-badge";
 import {
   DndContext,
   DragEndEvent,
@@ -65,14 +66,6 @@ const boardKeyboardCoordinates: KeyboardCoordinateGetter = (
   };
 };
 
-const STAGE_DOT: Record<ActiveStage, string> = {
-  LEAD: "bg-slate-600",
-  QUALIFIED: "bg-blue-600",
-  DISCOVERY: "bg-purple-600",
-  PROPOSAL: "bg-amber-700",
-  NEGOTIATION: "bg-orange-700",
-};
-
 interface DealKanbanProps {
   deals: BoardDeal[];
 }
@@ -93,7 +86,7 @@ function KanbanColumn({ stage, deals, isOver }: KanbanColumnProps) {
     <section aria-labelledby={headingId} className="w-80 flex-shrink-0">
       <div className="mb-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <span aria-hidden="true" className={`h-3 w-3 rounded-full ${STAGE_DOT[stage]}`} />
+          <span aria-hidden="true" className={`h-3 w-3 rounded-full ${STAGE_DOT_CLASS[stage]}`} />
           <h3 id={headingId} className="font-semibold">
             {label}
           </h3>

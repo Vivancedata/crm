@@ -14,7 +14,7 @@ import {
   User,
   Users,
 } from "lucide-react";
-import { Badge, type BadgeProps } from "@/components/ui/badge";
+import { StageBadge } from "@/components/deals/stage-badge";
 import { DEAL_STAGE_LABELS, INDUSTRY_LABELS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { globalSearch, type SearchResults } from "@/lib/actions/search";
@@ -86,16 +86,6 @@ const QUICK_LINKS: CommandLink[] = [
     value: "go-tasks",
   },
 ];
-
-const stageVariantMap: Record<string, BadgeProps["variant"]> = {
-  LEAD: "lead",
-  QUALIFIED: "qualified",
-  DISCOVERY: "discovery",
-  PROPOSAL: "proposal",
-  NEGOTIATION: "negotiation",
-  WON: "won",
-  LOST: "lost",
-};
 
 type DealStageLabelKey = keyof typeof DEAL_STAGE_LABELS;
 
@@ -227,12 +217,7 @@ function SearchResultsPanel({
                   <Briefcase className="h-4 w-4 shrink-0 text-muted-foreground" />
                   <div className="flex flex-1 items-center justify-between gap-2">
                     <span className="font-medium">{deal.title}</span>
-                    <Badge
-                      variant={stageVariantMap[stageKey] ?? "default"}
-                      className="text-[10px]"
-                    >
-                      {DEAL_STAGE_LABELS[stageKey] ?? deal.stage}
-                    </Badge>
+                    <StageBadge stage={stageKey} className="text-[10px]" />
                   </div>
                 </Command.Item>
               );
