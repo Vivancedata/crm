@@ -67,3 +67,17 @@ See `.env.example` for full list including Clerk redirect URLs.
 ## Deployment
 
 Vercel with `--legacy-peer-deps` (configured in `vercel.json` and `.npmrc`).
+
+## Agent skills
+
+### Issue tracker
+
+GitHub Issues on `Vivancedata/crm`, via the `gh` CLI. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+The five canonical roles, label string equal to role name. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: `CONTEXT.md` + `docs/adr/` at the repo root. See `docs/agents/domain.md`.
