@@ -57,16 +57,23 @@ export function TaskTable({ tasks, contacts, deals }: TaskTableProps) {
         const isCompleted = row.original.status === "COMPLETED";
         return (
           <button
+            type="button"
+            aria-pressed={isCompleted}
+            aria-label={
+              isCompleted
+                ? `Reopen "${row.original.title}"`
+                : `Mark "${row.original.title}" complete`
+            }
             onClick={(e) => {
               e.stopPropagation();
               handleToggleStatus(row.original.id);
             }}
-            className="flex items-center justify-center"
+            className="flex items-center justify-center rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             {isCompleted ? (
-              <CheckCircle2 className="h-5 w-5 text-success" />
+              <CheckCircle2 aria-hidden="true" className="h-5 w-5 text-success" />
             ) : (
-              <Circle className="h-5 w-5 text-muted-foreground" />
+              <Circle aria-hidden="true" className="h-5 w-5 text-muted-foreground" />
             )}
           </button>
         );

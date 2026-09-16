@@ -1,8 +1,6 @@
 "use client";
 
 import { UserButton } from "@clerk/nextjs";
-import { Plus } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { CommandSearch } from "@/components/shared/command-search";
 import { NotificationsPopover } from "@/components/shared/notifications-popover";
 import { isClerkClientConfigured } from "@/lib/clerk-config";
@@ -17,11 +15,10 @@ export function Header() {
 
       {/* Actions */}
       <div className="flex items-center gap-4">
-        <Button size="sm" className="gap-2">
-          <Plus className="h-4 w-4" />
-          Quick Add
-        </Button>
-
+        {/* "Quick Add" lived here with no onClick: the most prominent control
+            in the app did nothing at all. Every entity already has a real
+            create dialog on its own page, and ⌘K reaches any of them, so this
+            is a deletion rather than a fifth way in. */}
         <NotificationsPopover />
 
         {/* v7 removed UserButton's sign-out redirect props; the redirect now

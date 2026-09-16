@@ -1,86 +1,113 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { DealCard } from "@/components/deals/deal-card";
 import { formatCurrency } from "@/lib/utils";
 import { updateDealStage } from "@/lib/actions/deals";
 import { DEAL_STAGE_LABELS } from "@/lib/constants";
+import { ACTIVE_STAGES, isActiveStage, type ActiveStage, type BoardDeal } from "@/lib/deal-board";
 import {
   DndContext,
   DragEndEvent,
   DragOverEvent,
   DragOverlay,
   DragStartEvent,
-  closestCorners,
+  KeyboardSensor,
   PointerSensor,
+  closestCorners,
+  useDroppable,
   useSensor,
   useSensors,
+  type ClientRect,
+  type KeyboardCoordinateGetter,
 } from "@dnd-kit/core";
-import { useDroppable } from "@dnd-kit/core";
-import type { Deal, Company, Contact } from "@prisma/client";
 
-type DealWithRelations = Deal & {
-  company: Company | null;
-  contact: Contact | null;
+/**
+ * Left and right arrows move a picked-up card one column along the pipeline.
+ *
+ * dnd-kit's `sortableKeyboardCoordinates` is the usual answer, and it does not
+ * work here: it only considers droppables that belong to a `SortableContext`,
+ * and these columns are plain `useDroppable` targets. Wired up with it the card
+ * could be picked up and dropped but never moved -- the live region kept
+ * announcing the column it started in. Verified in the browser, not assumed.
+ *
+ * Up and down are deliberately inert. Position within a column is not stored,
+ * so reordering there would be undone by the next reload.
+ */
+const boardKeyboardCoordinates: KeyboardCoordinateGetter = (
+  event,
+  { currentCoordinates, context }
+) => {
+  const step = event.code === "ArrowRight" ? 1 : event.code === "ArrowLeft" ? -1 : 0;
+  if (step === 0) return undefined;
+  event.preventDefault();
+
+  const { collisionRect, droppableRects } = context;
+  if (!collisionRect) return undefined;
+
+  const columns = ACTIVE_STAGES.map((stage) => droppableRects.get(stage)).filter(
+    (rect): rect is ClientRect => Boolean(rect)
+  );
+  if (columns.length === 0) return undefined;
+
+  const cardCentre = collisionRect.left + collisionRect.width / 2;
+  const current = columns.findIndex(
+    (rect) => cardCentre >= rect.left && cardCentre <= rect.left + rect.width
+  );
+  const next = columns[(current === -1 ? (step > 0 ? -1 : columns.length) : current) + step];
+  if (!next) return undefined;
+
+  return {
+    x: currentCoordinates.x + (next.left - collisionRect.left),
+    y: currentCoordinates.y + (next.top - collisionRect.top),
+  };
 };
 
-const KANBAN_STAGES = [
-  { key: "LEAD", label: "Lead", color: "bg-slate-500", variant: "lead" as const },
-  { key: "QUALIFIED", label: "Qualified", color: "bg-blue-500", variant: "qualified" as const },
-  { key: "DISCOVERY", label: "Discovery", color: "bg-purple-500", variant: "discovery" as const },
-  { key: "PROPOSAL", label: "Proposal", color: "bg-amber-500", variant: "proposal" as const },
-  { key: "NEGOTIATION", label: "Negotiation", color: "bg-orange-500", variant: "negotiation" as const },
-] as const;
-
-type KanbanStageKey = (typeof KANBAN_STAGES)[number]["key"];
+const STAGE_DOT: Record<ActiveStage, string> = {
+  LEAD: "bg-slate-600",
+  QUALIFIED: "bg-blue-600",
+  DISCOVERY: "bg-purple-600",
+  PROPOSAL: "bg-amber-700",
+  NEGOTIATION: "bg-orange-700",
+};
 
 interface DealKanbanProps {
-  deals: DealWithRelations[];
+  deals: BoardDeal[];
 }
 
 interface KanbanColumnProps {
-  stageKey: string;
-  label: string;
-  color: string;
-  deals: DealWithRelations[];
+  stage: ActiveStage;
+  deals: BoardDeal[];
   isOver: boolean;
 }
 
-function KanbanColumn({ stageKey, label, color, deals, isOver }: KanbanColumnProps) {
-  const { setNodeRef } = useDroppable({
-    id: stageKey,
-  });
-
-  const totalValue = deals.reduce(
-    (acc, d) => acc + (d.value ? Number(d.value) : 0),
-    0
-  );
+function KanbanColumn({ stage, deals, isOver }: KanbanColumnProps) {
+  const { setNodeRef } = useDroppable({ id: stage });
+  const label = DEAL_STAGE_LABELS[stage];
+  const totalValue = deals.reduce((acc, d) => acc + (d.value ?? 0), 0);
+  const headingId = `kanban-column-${stage}`;
 
   return (
-    <div className="w-80 flex-shrink-0">
-      {/* Stage Header */}
+    <section aria-labelledby={headingId} className="w-80 flex-shrink-0">
       <div className="mb-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className={`h-3 w-3 rounded-full ${color}`} />
-          <h3 className="font-semibold">{label}</h3>
+          <span aria-hidden="true" className={`h-3 w-3 rounded-full ${STAGE_DOT[stage]}`} />
+          <h3 id={headingId} className="font-semibold">
+            {label}
+          </h3>
           <Badge variant="outline" className="ml-1">
             {deals.length}
           </Badge>
         </div>
-        <span className="text-sm text-muted-foreground">
-          {formatCurrency(totalValue)}
-        </span>
+        <span className="text-sm text-muted-foreground">{formatCurrency(totalValue)}</span>
       </div>
 
-      {/* Drop Zone */}
       <div
         ref={setNodeRef}
-        className={`min-h-[200px] space-y-3 rounded-lg p-2 transition-colors ${
-          isOver
-            ? "bg-primary/5 ring-2 ring-primary/20 ring-dashed"
-            : "bg-transparent"
+        className={`min-h-[200px] space-y-3 rounded-md p-2 transition-colors ${
+          isOver ? "bg-brand/5 ring-2 ring-dashed ring-brand/20" : "bg-transparent"
         }`}
       >
         {deals.map((deal) => (
@@ -88,78 +115,79 @@ function KanbanColumn({ stageKey, label, color, deals, isOver }: KanbanColumnPro
         ))}
 
         {deals.length === 0 && (
-          <div
-            className={`rounded-lg border-2 border-dashed p-6 text-center text-sm transition-colors ${
+          <p
+            className={`rounded-md border-2 border-dashed p-6 text-center text-sm transition-colors ${
               isOver
-                ? "border-primary/40 text-primary"
+                ? "border-brand/40 text-brand"
                 : "border-muted-foreground/25 text-muted-foreground"
             }`}
           >
             {isOver ? "Drop here" : "No deals"}
-          </div>
+          </p>
         )}
       </div>
-    </div>
+    </section>
   );
 }
 
 export function DealKanban({ deals }: DealKanbanProps) {
-  const [activeDeal, setActiveDeal] = useState<DealWithRelations | null>(null);
+  // A local mirror of the server's list so a dropped card stays where it was
+  // dropped. Without it the card snapped back to its old column and sat there
+  // until revalidatePath came round, which reads as "the drag failed".
+  const [board, setBoard] = useState(deals);
+  const [activeDeal, setActiveDeal] = useState<BoardDeal | null>(null);
   const [overColumn, setOverColumn] = useState<string | null>(null);
 
-  // Require a minimum drag distance before activating to avoid
-  // interfering with clicks on the card or dropdown menu
+  // The server is the truth; adopt it whenever it sends a new list.
+  useEffect(() => {
+    setBoard(deals);
+  }, [deals]);
+
   const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 8,
-      },
-    })
+    // Require a minimum drag distance before activating so a drag does not
+    // swallow a click on the card's link or its menu.
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    // Space picks a card up, left/right move it between columns, space drops
+    // it. Without this the board was unusable without a mouse.
+    useSensor(KeyboardSensor, { coordinateGetter: boardKeyboardCoordinates })
   );
 
   function handleDragStart(event: DragStartEvent) {
-    const deal = event.active.data.current?.deal as DealWithRelations | undefined;
-    if (deal) {
-      setActiveDeal(deal);
-    }
+    const deal = event.active.data.current?.deal as BoardDeal | undefined;
+    if (deal) setActiveDeal(deal);
   }
 
   function handleDragOver(event: DragOverEvent) {
-    const overId = event.over?.id as string | undefined;
-    if (overId && KANBAN_STAGES.some((s) => s.key === overId)) {
-      setOverColumn(overId);
-    } else {
-      setOverColumn(null);
-    }
+    const overId = event.over?.id;
+    setOverColumn(typeof overId === "string" && isActiveStage(overId) ? overId : null);
   }
 
   async function handleDragEnd(event: DragEndEvent) {
+    const deal = event.active.data.current?.deal as BoardDeal | undefined;
+    const overId = event.over?.id;
+
     setActiveDeal(null);
     setOverColumn(null);
 
-    const { active, over } = event;
-    if (!over) return;
+    if (!deal || typeof overId !== "string" || !isActiveStage(overId)) return;
+    if (deal.stage === overId) return;
 
-    const dealId = active.id as string;
-    const deal = active.data.current?.deal as DealWithRelations | undefined;
-    const overId = over.id as string;
-    const stage = KANBAN_STAGES.find((s) => s.key === overId)?.key;
-    if (!stage) return;
-    const newStage: KanbanStageKey = stage;
-
-    // Only proceed if dropping on a valid stage column and it's different
-    if (!deal) return;
-    if (deal.stage === newStage) return;
+    const nextStage: ActiveStage = overId;
+    setBoard((current) =>
+      current.map((d) => (d.id === deal.id ? { ...d, stage: nextStage } : d))
+    );
 
     try {
-      const result = await updateDealStage(dealId, newStage);
+      const result = await updateDealStage(deal.id, nextStage);
       if (!result.success) {
-        toast.error(result.error ?? "Failed to update deal stage");
+        setBoard(deals);
+        toast.error(result.error ?? "Couldn't move that deal.");
         return;
       }
-      toast.success(`Deal moved to ${DEAL_STAGE_LABELS[newStage]}`);
+      toast.success(`Deal moved to ${DEAL_STAGE_LABELS[nextStage]}`);
     } catch {
-      toast.error("Failed to update deal stage");
+      setBoard(deals);
+      toast.error("Couldn't move that deal.");
     }
   }
 
@@ -172,26 +200,26 @@ export function DealKanban({ deals }: DealKanbanProps) {
     <DndContext
       sensors={sensors}
       collisionDetection={closestCorners}
+      accessibility={{
+        screenReaderInstructions: {
+          draggable:
+            "Press space to pick up this deal, the left and right arrow keys to move it between pipeline stages, space again to drop it, and escape to cancel.",
+        },
+      }}
       onDragStart={handleDragStart}
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
       onDragCancel={handleDragCancel}
     >
       <div className="flex gap-4 overflow-x-auto pb-4">
-        {KANBAN_STAGES.map((stage) => {
-          const stageDeals = deals.filter((d) => d.stage === stage.key);
-
-          return (
-            <KanbanColumn
-              key={stage.key}
-              stageKey={stage.key}
-              label={stage.label}
-              color={stage.color}
-              deals={stageDeals}
-              isOver={overColumn === stage.key}
-            />
-          );
-        })}
+        {ACTIVE_STAGES.map((stage) => (
+          <KanbanColumn
+            key={stage}
+            stage={stage}
+            deals={board.filter((d) => d.stage === stage)}
+            isOver={overColumn === stage}
+          />
+        ))}
       </div>
 
       <DragOverlay dropAnimation={null}>
