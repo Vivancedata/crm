@@ -30,8 +30,8 @@ export function StatsCard({
             <p className="text-sm font-medium text-muted-foreground">{title}</p>
             <p className="text-2xl font-bold">{value}</p>
           </div>
-          <div className="rounded-lg bg-primary/10 p-3">
-            <Icon className="h-5 w-5 text-primary" />
+          <div className="rounded-sm bg-muted p-3">
+            <Icon aria-hidden="true" className="h-5 w-5 text-muted-foreground" />
           </div>
         </div>
         {(subtitle || trend) && (
@@ -40,8 +40,8 @@ export function StatsCard({
               <TrendIcon
                 className={cn(
                   "h-3 w-3",
-                  trend === "up" && "text-emerald-500",
-                  trend === "down" && "text-red-500",
+                  trend === "up" && "text-success",
+                  trend === "down" && "text-destructive",
                   trend === "neutral" && "text-muted-foreground"
                 )}
               />

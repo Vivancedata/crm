@@ -34,10 +34,10 @@ export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="hidden w-[var(--sidebar-width)] flex-col border-r bg-card lg:flex">
+    <aside className="hidden w-sidebar flex-col border-r bg-card lg:flex">
       {/* Logo */}
       <div className="flex h-16 items-center gap-2 border-b px-6">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold">
+        <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary font-bold text-primary-foreground">
           V
         </div>
         <span className="font-semibold">Vivancedata CRM</span>
@@ -78,7 +78,8 @@ export function Sidebar() {
               key={item.name}
               href={item.href}
               className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all",
+                // Same 6px square as the list above it; these two disagreed.
+                "flex items-center gap-3 rounded-sm px-3 py-2 text-sm font-medium transition-colors",
                 isActive
                   ? "bg-primary text-primary-foreground"
                   : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"

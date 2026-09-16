@@ -52,20 +52,14 @@ export default async function DashboardPage() {
   ).length;
   const winRate = closedDeals > 0 ? Math.round((wonDeals / closedDeals) * 100) : 0;
 
-  // Pipeline stages
-  const stageConfig = [
-    { key: "LEAD", name: "Lead", variant: "lead" as const },
-    { key: "QUALIFIED", name: "Qualified", variant: "qualified" as const },
-    { key: "DISCOVERY", name: "Discovery", variant: "discovery" as const },
-    { key: "PROPOSAL", name: "Proposal", variant: "proposal" as const },
-    { key: "NEGOTIATION", name: "Negotiation", variant: "negotiation" as const },
-  ];
+  // Pipeline stages. The board's five, in order; the labels and the colours
+  // both come from one place now (DEAL_STAGE_LABELS and <StageBadge>).
+  const stageConfig = ["LEAD", "QUALIFIED", "DISCOVERY", "PROPOSAL", "NEGOTIATION"] as const;
 
   const pipelineStages = stageConfig.map((stage) => {
-    const stageDeals = deals.filter((d) => d.stage === stage.key);
+    const stageDeals = deals.filter((d) => d.stage === stage);
     return {
-      name: stage.name,
-      variant: stage.variant,
+      stage,
       count: stageDeals.length,
       value: stageDeals.reduce(
         (acc, d) => acc + (d.value ? Number(d.value) : 0),

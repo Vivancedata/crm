@@ -1,14 +1,14 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { StageBadge } from "@/components/deals/stage-badge";
 import { formatCurrency } from "@/lib/utils";
+import type { DEAL_STAGE_LABELS } from "@/lib/constants";
 
 interface PipelineStage {
-  name: string;
+  stage: keyof typeof DEAL_STAGE_LABELS;
   count: number;
   value: number;
-  variant: "lead" | "qualified" | "discovery" | "proposal" | "negotiation";
 }
 
 interface PipelineOverviewProps {
@@ -29,10 +29,10 @@ export function PipelineOverview({ stages }: PipelineOverviewProps) {
             const percentage = totalValue > 0 ? (stage.value / totalValue) * 100 : 0;
 
             return (
-              <div key={stage.name} className="space-y-2">
+              <div key={stage.stage} className="space-y-2">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Badge variant={stage.variant}>{stage.name}</Badge>
+                    <StageBadge stage={stage.stage} />
                     <span className="text-sm text-muted-foreground">
                       {stage.count} deals
                     </span>

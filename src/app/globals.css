@@ -22,3 +22,32 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  :root {
+    /**
+     * The sidebar's width. `src/components/layout/sidebar.tsx` has always read
+     * `w-[var(--sidebar-width)]`, and nothing anywhere defined it, so the
+     * declaration was invalid and the rail was sized by its longest nav label.
+     */
+    --sidebar-width: 16rem;
+
+    /**
+     * The pipeline ramp -- five stages, one hue each.
+     *
+     * These are app tokens rather than design-system ones on purpose: a deal
+     * stage is a CRM concept and the marketing site has no pipeline. They are
+     * not the `chart-*` ramp either, which is tuned for large filled areas:
+     * white on `chart-4` measures 2.00:1, and these are chips with white text
+     * on them. Measured white-on-fill, light and dark alike (a solid fill does
+     * not depend on the sheet behind it):
+     *   lead 7.42 · qualified 5.20 · discovery 7.01 · proposal 5.04 ·
+     *   negotiation 4.90 -- all clear of the 4.5:1 AA floor.
+     */
+    --stage-lead: 215 19% 35%;
+    --stage-qualified: 221 83% 53%;
+    --stage-discovery: 272 72% 47%;
+    --stage-proposal: 26 90% 37%;
+    --stage-negotiation: 21 90% 40%;
+  }
+}

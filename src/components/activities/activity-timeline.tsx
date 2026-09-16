@@ -2,19 +2,7 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
-import {
-  Phone,
-  Mail,
-  Calendar,
-  FileText,
-  CheckCircle2,
-  ArrowRight,
-  Send,
-  FileSignature,
-  Trash2,
-  Clock,
-  type LucideIcon,
-} from "lucide-react";
+import { Trash2, Clock } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -28,40 +16,8 @@ import {
 } from "@/components/ui/dialog";
 import { deleteActivity } from "@/lib/actions/activities";
 import { formatRelativeDate } from "@/lib/utils";
+import { activityStyle } from "@/lib/activity-style";
 import { LogActivityDialog } from "./log-activity-dialog";
-
-const activityIcons: Record<string, LucideIcon> = {
-  CALL: Phone,
-  EMAIL: Mail,
-  MEETING: Calendar,
-  NOTE: FileText,
-  TASK_COMPLETED: CheckCircle2,
-  DEAL_STAGE_CHANGE: ArrowRight,
-  PROPOSAL_SENT: Send,
-  CONTRACT_SIGNED: FileSignature,
-};
-
-const activityColors: Record<string, string> = {
-  CALL: "bg-blue-500/10 text-blue-500",
-  EMAIL: "bg-purple-500/10 text-purple-500",
-  MEETING: "bg-green-500/10 text-green-500",
-  NOTE: "bg-gray-500/10 text-gray-500",
-  TASK_COMPLETED: "bg-emerald-500/10 text-emerald-500",
-  DEAL_STAGE_CHANGE: "bg-amber-500/10 text-amber-500",
-  PROPOSAL_SENT: "bg-indigo-500/10 text-indigo-500",
-  CONTRACT_SIGNED: "bg-teal-500/10 text-teal-500",
-};
-
-const ACTIVITY_TYPE_LABELS: Record<string, string> = {
-  CALL: "Call",
-  EMAIL: "Email",
-  MEETING: "Meeting",
-  NOTE: "Note",
-  TASK_COMPLETED: "Task Completed",
-  DEAL_STAGE_CHANGE: "Stage Change",
-  PROPOSAL_SENT: "Proposal Sent",
-  CONTRACT_SIGNED: "Contract Signed",
-};
 
 interface ActivityUser {
   id: string;
@@ -135,17 +91,15 @@ export function ActivityTimeline({
       ) : (
         <div className="space-y-4">
           {activities.map((activity) => {
-            const Icon = activityIcons[activity.type] ?? FileText;
-            const colorClass =
-              activityColors[activity.type] ?? "bg-gray-500/10 text-gray-500";
+            const { icon: Icon, chip } = activityStyle(activity.type);
             const isOwner = activity.userId === currentUserId;
 
             return (
               <Card key={activity.id}>
                 <CardContent className="p-4">
                   <div className="flex items-start gap-4">
-                    <div className={`rounded-lg p-2 ${colorClass}`}>
-                      <Icon className="h-4 w-4" />
+                    <div className={`rounded-sm p-2 ${chip}`}>
+                      <Icon aria-hidden="true" className="h-4 w-4" />
                     </div>
                     <div className="flex-1">
                       <div className="flex items-start justify-between gap-2">
@@ -153,7 +107,7 @@ export function ActivityTimeline({
                           <div className="flex items-center gap-2">
                             <p className="font-medium">{activity.subject}</p>
                             <Badge variant="outline">
-                              {ACTIVITY_TYPE_LABELS[activity.type] ?? activity.type}
+                              {activityStyle(activity.type).label}
                             </Badge>
                           </div>
                           {activity.description && (
