@@ -3,7 +3,8 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge, type BadgeProps } from "@/components/ui/badge";
+import { Badge } from "@/components/ui/badge";
+import { StageBadge } from "@/components/deals/stage-badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { EditContactDialog } from "@/components/contacts/edit-contact-dialog";
 import { DeleteContactDialog } from "@/components/contacts/delete-contact-dialog";
@@ -12,7 +13,6 @@ import { ActivityTimeline } from "@/components/activities/activity-timeline";
 import {
   CONTACT_STATUS_LABELS,
   LEAD_SOURCE_LABELS,
-  DEAL_STAGE_LABELS,
   INDUSTRY_LABELS,
 } from "@/lib/constants";
 import { formatCurrency, formatDate, getInitials } from "@/lib/utils";
@@ -248,9 +248,7 @@ export default async function ContactDetailPage({ params }: ContactDetailPagePro
                         </Link>
 	                      </td>
 	                      <td className="px-6 py-4">
-	                        <Badge variant={deal.stage.toLowerCase() as BadgeProps["variant"]}>
-	                          {DEAL_STAGE_LABELS[deal.stage]}
-	                        </Badge>
+	                        <StageBadge stage={deal.stage} />
 	                      </td>
                       <td className="px-6 py-4">
                         {deal.value ? formatCurrency(Number(deal.value)) : "-"}
