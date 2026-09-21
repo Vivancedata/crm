@@ -21,6 +21,7 @@ const config = [
       "build/**",
       "out/**",
       "coverage/**",
+      "src/generated/**",
     ],
   },
   ...compat.extends("next/core-web-vitals", "next/typescript"),

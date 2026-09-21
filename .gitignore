@@ -32,6 +32,7 @@ npm-debug.log*
 *.tsbuildinfo
 
 # Prisma
+src/generated/
 prisma/*.db
 prisma/*.db-journal
 

@@ -35,7 +35,7 @@ import {
 import { updateDeal } from "@/lib/actions/deals";
 import { dealSchema, type DealFormValues } from "@/lib/validations/deal";
 import { DEAL_STAGE_LABELS, SERVICE_TYPE_LABELS } from "@/lib/constants";
-import type { Deal } from "@prisma/client";
+import type { Deal } from "@/generated/prisma/browser";
 
 interface EditDealDialogProps {
   deal: Deal;

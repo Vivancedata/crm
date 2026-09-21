@@ -2,7 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth";
-import type { Company, Deal } from "@prisma/client";
+import type { Company, Deal } from "@/generated/prisma/browser";
 
 export type SearchResults = {
   companies: {

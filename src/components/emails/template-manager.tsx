@@ -42,7 +42,7 @@ import {
   emailTemplateSchema,
   type EmailTemplateFormValues,
 } from "@/lib/validations/email";
-import type { EmailTemplate } from "@prisma/client";
+import type { EmailTemplate } from "@/generated/prisma/browser";
 
 interface TemplateManagerProps {
   templates: EmailTemplate[];

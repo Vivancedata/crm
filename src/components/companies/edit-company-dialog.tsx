@@ -35,7 +35,7 @@ import {
 import { updateCompany } from "@/lib/actions/companies";
 import { companySchema, type CompanyFormValues } from "@/lib/validations/company";
 import { INDUSTRY_LABELS, COMPANY_SIZE_LABELS } from "@/lib/constants";
-import type { Company } from "@prisma/client";
+import type { Company } from "@/generated/prisma/browser";
 
 interface EditCompanyDialogProps {
   company: Company;

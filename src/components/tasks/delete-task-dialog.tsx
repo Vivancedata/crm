@@ -12,7 +12,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { deleteTask } from "@/lib/actions/tasks";
-import type { Task } from "@prisma/client";
+import type { Task } from "@/generated/prisma/browser";
 
 interface DeleteTaskDialogProps {
   task: Task;

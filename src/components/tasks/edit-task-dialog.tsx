@@ -32,7 +32,7 @@ import {
 import { updateTask } from "@/lib/actions/tasks";
 import { taskSchema, type TaskFormValues } from "@/lib/validations/task";
 import { PRIORITY_LABELS } from "@/lib/constants";
-import type { Task } from "@prisma/client";
+import type { Task } from "@/generated/prisma/browser";
 
 type TaskWithRelations = Task & {
   contact: { firstName: string; lastName: string } | null;
