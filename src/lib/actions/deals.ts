@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth";
+import { toUserMessage } from "@/lib/action-error";
 import { logger } from "@/lib/logger";
 import { dealSchema } from "@/lib/validations/deal";
 import { DEAL_STAGE_LABELS, DEAL_STAGE_PROBABILITY } from "@/lib/constants";
@@ -51,7 +52,7 @@ export async function createDeal(formData: unknown) {
       action: "createDeal",
       error: error instanceof Error ? error.message : String(error),
     });
-    return { success: false, error: error instanceof Error ? error.message : "An unexpected error occurred" };
+    return { success: false, error: toUserMessage(error, "Couldn't create deal.") };
   }
 }
 
@@ -109,7 +110,7 @@ export async function updateDeal(id: string, formData: unknown) {
       action: "updateDeal",
       error: error instanceof Error ? error.message : String(error),
     });
-    return { success: false, error: error instanceof Error ? error.message : "An unexpected error occurred" };
+    return { success: false, error: toUserMessage(error, "Couldn't update deal.") };
   }
 }
 
@@ -171,7 +172,7 @@ export async function updateDealStage(id: string, stage: string, lostReason?: st
       action: "updateDealStage",
       error: error instanceof Error ? error.message : String(error),
     });
-    return { success: false, error: error instanceof Error ? error.message : "An unexpected error occurred" };
+    return { success: false, error: toUserMessage(error, "Couldn't update deal stage.") };
   }
 }
 
@@ -196,6 +197,6 @@ export async function deleteDeal(id: string) {
       action: "deleteDeal",
       error: error instanceof Error ? error.message : String(error),
     });
-    return { success: false, error: error instanceof Error ? error.message : "An unexpected error occurred" };
+    return { success: false, error: toUserMessage(error, "Couldn't delete deal.") };
   }
 }

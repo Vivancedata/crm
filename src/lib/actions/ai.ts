@@ -3,6 +3,7 @@
 import { generateText } from "ai";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth";
+import { toUserMessage } from "@/lib/action-error";
 import { aiModel } from "@/lib/ai";
 import { logger } from "@/lib/logger";
 import { AI_SYSTEM_PROMPT, sanitizeForPrompt } from "@/lib/ai-safety";
@@ -124,7 +125,7 @@ WIN_PROBABILITY:
     };
   } catch (error) {
     logger.error("Failed to generate deal insights", { action: "generateDealInsights", error: error instanceof Error ? error.message : String(error) });
-    return { success: false as const, error: error instanceof Error ? error.message : "An unexpected error occurred" };
+    return { success: false as const, error: toUserMessage(error, "Couldn't generate deal insights.") };
   }
 }
 
@@ -206,7 +207,7 @@ BODY:
     return { success: true as const, subject, body };
   } catch (error) {
     logger.error("Failed to generate email draft", { action: "generateEmailDraft", error: error instanceof Error ? error.message : String(error) });
-    return { success: false as const, error: error instanceof Error ? error.message : "An unexpected error occurred" };
+    return { success: false as const, error: toUserMessage(error, "Couldn't generate email draft.") };
   }
 }
 
@@ -369,6 +370,6 @@ SUGGESTED_ACTIONS:
     };
   } catch (error) {
     logger.error("Failed to summarize company", { action: "summarizeCompany", error: error instanceof Error ? error.message : String(error) });
-    return { success: false as const, error: error instanceof Error ? error.message : "An unexpected error occurred" };
+    return { success: false as const, error: toUserMessage(error, "Couldn't summarize company.") };
   }
 }

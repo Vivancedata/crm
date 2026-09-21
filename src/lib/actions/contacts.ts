@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth";
+import { toUserMessage } from "@/lib/action-error";
 import { logger } from "@/lib/logger";
 import { contactSchema } from "@/lib/validations/contact";
 
@@ -46,7 +47,7 @@ export async function createContact(formData: unknown) {
       action: "createContact",
       error: error instanceof Error ? error.message : String(error),
     });
-    return { success: false, error: error instanceof Error ? error.message : "An unexpected error occurred" };
+    return { success: false, error: toUserMessage(error, "Couldn't create contact.") };
   }
 }
 
@@ -98,7 +99,7 @@ export async function updateContact(id: string, formData: unknown) {
       action: "updateContact",
       error: error instanceof Error ? error.message : String(error),
     });
-    return { success: false, error: error instanceof Error ? error.message : "An unexpected error occurred" };
+    return { success: false, error: toUserMessage(error, "Couldn't update contact.") };
   }
 }
 
@@ -123,6 +124,6 @@ export async function deleteContact(id: string) {
       action: "deleteContact",
       error: error instanceof Error ? error.message : String(error),
     });
-    return { success: false, error: error instanceof Error ? error.message : "An unexpected error occurred" };
+    return { success: false, error: toUserMessage(error, "Couldn't delete contact.") };
   }
 }

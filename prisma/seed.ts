@@ -1,18 +1,15 @@
 import { prisma } from "@/lib/prisma";
+import { LOCAL_DEV_USER } from "@/lib/dev-user";
 
 async function main() {
   console.log("Seeding database...");
 
-  // Create a default user (will be linked to Clerk on first sign-in)
+  // Seed data belongs to the same fixed user the app runs as when Clerk has
+  // no server keys (src/lib/auth.ts), so a local dev run sees it.
   const user = await prisma.user.upsert({
-    where: { email: "nataly@vivancedata.com" },
+    where: { clerkId: LOCAL_DEV_USER.clerkId },
     update: {},
-    create: {
-      clerkId: "seed_user_placeholder",
-      email: "nataly@vivancedata.com",
-      name: "Nataly Scaturchio",
-      role: "ADMIN",
-    },
+    create: { ...LOCAL_DEV_USER, role: "ADMIN" },
   });
 
   // Companies
