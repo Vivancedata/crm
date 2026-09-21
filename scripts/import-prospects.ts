@@ -33,9 +33,8 @@
 
 import fs from "node:fs";
 import path from "node:path";
-import { PrismaClient, type Industry, type CompanySize } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import type { Industry, CompanySize } from "@/generated/prisma/client";
+import { prisma } from "@/lib/prisma";
 
 const VALID_INDUSTRIES = new Set<string>([
   "CONSTRUCTION", "MANUFACTURING", "LOGISTICS", "HVAC", "PLUMBING", "ELECTRICAL",

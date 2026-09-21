@@ -35,7 +35,7 @@ import {
 import { updateContact } from "@/lib/actions/contacts";
 import { contactSchema, type ContactFormValues } from "@/lib/validations/contact";
 import { CONTACT_STATUS_LABELS, LEAD_SOURCE_LABELS } from "@/lib/constants";
-import type { Contact } from "@prisma/client";
+import type { Contact } from "@/generated/prisma/client";
 
 interface EditContactDialogProps {
   contact: Contact;

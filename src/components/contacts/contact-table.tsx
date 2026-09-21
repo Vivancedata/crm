@@ -6,7 +6,7 @@ import { DataTable } from "@/components/ui/data-table";
 import { Badge } from "@/components/ui/badge";
 import { CONTACT_STATUS_LABELS, INDUSTRY_LABELS } from "@/lib/constants";
 import { getInitials } from "@/lib/utils";
-import type { Contact, Company } from "@prisma/client";
+import type { Contact, Company } from "@/generated/prisma/client";
 
 type ContactWithCompany = Contact & {
   company: Company | null;

@@ -19,7 +19,7 @@ import { EditTaskDialog } from "@/components/tasks/edit-task-dialog";
 import { DeleteTaskDialog } from "@/components/tasks/delete-task-dialog";
 import { MoreHorizontal, Pencil, Trash2, CheckCircle2, Circle } from "lucide-react";
 import { toast } from "sonner";
-import type { Task } from "@prisma/client";
+import type { Task } from "@/generated/prisma/client";
 
 type TaskWithRelations = Task & {
   contact: { firstName: string; lastName: string } | null;
