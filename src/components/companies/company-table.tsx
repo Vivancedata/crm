@@ -6,7 +6,7 @@ import { DataTable } from "@/components/ui/data-table";
 import { Badge } from "@/components/ui/badge";
 import { INDUSTRY_LABELS, COMPANY_SIZE_LABELS } from "@/lib/constants";
 import { getInitials, formatDate } from "@/lib/utils";
-import type { Company } from "@prisma/client";
+import type { Company } from "@/generated/prisma/client";
 
 const columns: ColumnDef<Company>[] = [
   {

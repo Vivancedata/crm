@@ -20,9 +20,7 @@
  *   - Say the specific thing that was built. The artefact is the pitch.
  */
 
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { prisma } from "@/lib/prisma";
 
 interface TemplateSeed {
   name: string;

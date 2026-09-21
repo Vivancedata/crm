@@ -18,7 +18,7 @@ import { Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { deleteEmail } from "@/lib/actions/emails";
 import { formatDate } from "@/lib/utils";
-import type { Email, Contact, EmailStatus } from "@prisma/client";
+import type { Email, Contact, EmailStatus } from "@/generated/prisma/client";
 
 type EmailWithContact = Email & {
   contact: Contact;

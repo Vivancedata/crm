@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { TaskTable } from "@/components/tasks/task-table";
-import type { Task } from "@prisma/client";
+import type { Task } from "@/generated/prisma/client";
 
 type TaskWithRelations = Task & {
   contact: { firstName: string; lastName: string } | null;
