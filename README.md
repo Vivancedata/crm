@@ -257,7 +257,7 @@ Copy `.env.example` to `.env` and fill in the values.
 | `npm run db:seed` | Seed the database with sample data (`tsx prisma/seed.ts`) |
 | `npx prisma generate` | Regenerate the Prisma client (also runs automatically on `postinstall`) |
 
-After changing `prisma/schema.prisma`, run `npm run db:push` (dev) or `npm run db:migrate` (production). The Prisma client is auto-generated via the `postinstall` script.
+After changing `prisma/schema.prisma`, run `npm run db:push` (dev) or `npm run db:migrate` (production), then `npx prisma generate`: since Prisma 7, neither command regenerates the client or runs the seed on its own. The client is generated into `src/generated/prisma/` (gitignored) and also on `postinstall`. Server code imports from `@/generated/prisma/client`; client components import types from `@/generated/prisma/browser`. CLI settings, including the database URL and seed command, live in `prisma.config.ts`, which loads `.env` via `dotenv`.
 
 ---
 
@@ -375,7 +375,7 @@ vivancedata-crm/
 │   │       ├── deal-insights.tsx  # AI-generated deal analysis widget
 │   │       └── email-draft-button.tsx
 │   └── lib/
-│       ├── prisma.ts              # Singleton Prisma client (global cache in dev)
+│       ├── prisma.ts              # Singleton Prisma client on the pg driver adapter (global cache in dev)
 │       ├── auth.ts                # getCurrentUser() / requireUser() (Clerk -> DB)
 │       ├── constants.ts           # Display labels for all Prisma enums
 │       ├── utils.ts               # General utilities (cn, etc.)
@@ -537,6 +537,7 @@ The project is configured for Vercel deployment with the following settings in `
 **Notes:**
 - `--legacy-peer-deps` is required because `@vivancedata/ui` is installed from GitHub and may have peer dependency version mismatches
 - The `postinstall` script automatically runs `prisma generate` during the Vercel build
+- Prisma 7 connects through the `pg` driver (`@prisma/adapter-pg`), which verifies the database's TLS certificate and uses `pg`'s own pool defaults rather than Prisma's old engine pool
 - Run `npm run db:deploy` in your CI pipeline or as a Vercel build hook to apply pending migrations
 
 ### Database (Railway, Neon, Supabase, etc.)

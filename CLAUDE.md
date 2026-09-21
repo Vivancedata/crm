@@ -14,7 +14,7 @@ bun run db:studio    # Open Prisma Studio GUI
 bun run db:seed      # Seed database (tsx prisma/seed.ts)
 ```
 
-After changing `prisma/schema.prisma`, run `bun run db:push` (dev) or `bun run db:migrate` (production). Prisma Client is auto-generated via the `postinstall` script.
+After changing `prisma/schema.prisma`, run `bun run db:push` (dev) or `bun run db:migrate` (production), then `npx prisma generate` (Prisma 7 no longer generates on migrate/push). Prisma Client is also generated on `postinstall`, into `src/generated/prisma/` (gitignored). The database URL and seed command live in `prisma.config.ts`.
 
 No test framework is configured.
 
@@ -34,7 +34,8 @@ No test framework is configured.
 
 | Path | Purpose |
 |------|---------|
-| `src/lib/prisma.ts` | Singleton Prisma client (global cache in dev) |
+| `src/lib/prisma.ts` | Singleton Prisma client on `@prisma/adapter-pg` (global cache in dev); scripts and seeds reuse it |
+| `src/generated/prisma/` | Generated client (not committed). Server code imports `@/generated/prisma/client`; client components import types from `@/generated/prisma/browser` |
 | `src/lib/auth.ts` | `getCurrentUser()` / `requireUser()` — syncs Clerk identity to DB User |
 | `src/lib/constants.ts` | Display labels for all Prisma enums (e.g., `DEAL_STAGE_LABELS`) |
 | `src/lib/ai.ts` | AI model config (Anthropic via Vercel AI SDK) |
