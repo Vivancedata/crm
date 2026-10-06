@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth";
+import { toUserMessage } from "@/lib/action-error";
 import { logger } from "@/lib/logger";
 import { taskSchema } from "@/lib/validations/task";
 
@@ -46,7 +47,7 @@ export async function createTask(formData: unknown) {
       action: "createTask",
       error: error instanceof Error ? error.message : String(error),
     });
-    return { success: false, error: error instanceof Error ? error.message : "An unexpected error occurred" };
+    return { success: false, error: toUserMessage(error, "Couldn't create task.") };
   }
 }
 
@@ -97,7 +98,7 @@ export async function updateTask(id: string, formData: unknown) {
       action: "updateTask",
       error: error instanceof Error ? error.message : String(error),
     });
-    return { success: false, error: error instanceof Error ? error.message : "An unexpected error occurred" };
+    return { success: false, error: toUserMessage(error, "Couldn't update task.") };
   }
 }
 
@@ -130,7 +131,7 @@ export async function toggleTaskStatus(id: string) {
       action: "toggleTaskStatus",
       error: error instanceof Error ? error.message : String(error),
     });
-    return { success: false, error: error instanceof Error ? error.message : "An unexpected error occurred" };
+    return { success: false, error: toUserMessage(error, "Couldn't toggle task status.") };
   }
 }
 
@@ -155,6 +156,6 @@ export async function deleteTask(id: string) {
       action: "deleteTask",
       error: error instanceof Error ? error.message : String(error),
     });
-    return { success: false, error: error instanceof Error ? error.message : "An unexpected error occurred" };
+    return { success: false, error: toUserMessage(error, "Couldn't delete task.") };
   }
 }

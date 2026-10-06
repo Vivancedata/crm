@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth";
+import { toUserMessage } from "@/lib/action-error";
 import { logger } from "@/lib/logger";
 import { noteSchema } from "@/lib/validations/note";
 
@@ -60,7 +61,7 @@ export async function createNote(formData: unknown) {
       action: "createNote",
       error: error instanceof Error ? error.message : String(error),
     });
-    return { success: false, error: error instanceof Error ? error.message : "An unexpected error occurred" };
+    return { success: false, error: toUserMessage(error, "Couldn't create note.") };
   }
 }
 
@@ -91,7 +92,7 @@ export async function updateNote(id: string, formData: unknown) {
       action: "updateNote",
       error: error instanceof Error ? error.message : String(error),
     });
-    return { success: false, error: error instanceof Error ? error.message : "An unexpected error occurred" };
+    return { success: false, error: toUserMessage(error, "Couldn't update note.") };
   }
 }
 
@@ -118,7 +119,7 @@ export async function toggleNotePin(id: string) {
       action: "toggleNotePin",
       error: error instanceof Error ? error.message : String(error),
     });
-    return { success: false, error: error instanceof Error ? error.message : "An unexpected error occurred" };
+    return { success: false, error: toUserMessage(error, "Couldn't toggle note pin.") };
   }
 }
 
@@ -142,6 +143,6 @@ export async function deleteNote(id: string) {
       action: "deleteNote",
       error: error instanceof Error ? error.message : String(error),
     });
-    return { success: false, error: error instanceof Error ? error.message : "An unexpected error occurred" };
+    return { success: false, error: toUserMessage(error, "Couldn't delete note.") };
   }
 }

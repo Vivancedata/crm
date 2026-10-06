@@ -17,7 +17,9 @@ const protectedMiddleware = clerkMiddleware(async (auth, req) => {
 
 export default function middleware(request: NextRequest, event: NextFetchEvent) {
   // Without server keys (local dev, CI) the app runs unauthenticated rather
-  // than crashing at the edge; every page then renders against an empty user.
+  // than crashing at the edge. Outside production every page then renders as
+  // the fixed local dev user (src/lib/auth.ts); in production requireUser()
+  // still refuses.
   if (!isClerkServerConfigured()) {
     return NextResponse.next();
   }

@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth";
+import { toUserMessage } from "@/lib/action-error";
 import { resend } from "@/lib/resend";
 import { logger } from "@/lib/logger";
 import { emailSchema, emailTemplateSchema } from "@/lib/validations/email";
@@ -97,7 +98,7 @@ export async function sendEmail(formData: unknown) {
     return { success: true, email };
   } catch (error) {
     logger.error("Failed to send email", { action: "sendEmail", error: error instanceof Error ? error.message : String(error) });
-    return { success: false, error: error instanceof Error ? error.message : "An unexpected error occurred" };
+    return { success: false, error: toUserMessage(error, "Couldn't send email.") };
   }
 }
 
@@ -140,7 +141,7 @@ export async function saveDraft(formData: unknown) {
     return { success: true, email };
   } catch (error) {
     logger.error("Failed to save draft", { action: "saveDraft", error: error instanceof Error ? error.message : String(error) });
-    return { success: false, error: error instanceof Error ? error.message : "An unexpected error occurred" };
+    return { success: false, error: toUserMessage(error, "Couldn't save draft.") };
   }
 }
 
@@ -162,7 +163,7 @@ export async function deleteEmail(id: string) {
     return { success: true };
   } catch (error) {
     logger.error("Failed to delete email", { action: "deleteEmail", error: error instanceof Error ? error.message : String(error) });
-    return { success: false, error: error instanceof Error ? error.message : "An unexpected error occurred" };
+    return { success: false, error: toUserMessage(error, "Couldn't delete email.") };
   }
 }
 
@@ -186,7 +187,7 @@ export async function createTemplate(formData: unknown) {
     return { success: true, template };
   } catch (error) {
     logger.error("Failed to create template", { action: "createTemplate", error: error instanceof Error ? error.message : String(error) });
-    return { success: false, error: error instanceof Error ? error.message : "An unexpected error occurred" };
+    return { success: false, error: toUserMessage(error, "Couldn't create template.") };
   }
 }
 
@@ -217,7 +218,7 @@ export async function updateTemplate(id: string, formData: unknown) {
     return { success: true, template };
   } catch (error) {
     logger.error("Failed to update template", { action: "updateTemplate", error: error instanceof Error ? error.message : String(error) });
-    return { success: false, error: error instanceof Error ? error.message : "An unexpected error occurred" };
+    return { success: false, error: toUserMessage(error, "Couldn't update template.") };
   }
 }
 
@@ -238,6 +239,6 @@ export async function deleteTemplate(id: string) {
     return { success: true };
   } catch (error) {
     logger.error("Failed to delete template", { action: "deleteTemplate", error: error instanceof Error ? error.message : String(error) });
-    return { success: false, error: error instanceof Error ? error.message : "An unexpected error occurred" };
+    return { success: false, error: toUserMessage(error, "Couldn't delete template.") };
   }
 }
