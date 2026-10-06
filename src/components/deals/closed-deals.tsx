@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
+import { StageBadge } from "@/components/deals/stage-badge";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { formatCurrency, formatDate } from "@/lib/utils";
 
@@ -57,9 +57,7 @@ export function ClosedDeals({ deals }: { deals: ClosedDeal[] }) {
       <ul id="closed-deals-list" hidden={!open} className="divide-y divide-border border-t border-border">
         {deals.map((deal) => (
           <li key={deal.id} className="flex items-baseline gap-3 px-4 py-3 text-sm">
-            <Badge variant={deal.stage === "WON" ? "won" : "lost"}>
-              {deal.stage === "WON" ? "Won" : "Lost"}
-            </Badge>
+            <StageBadge stage={deal.stage} />
             <Link
               href={`/deals/${deal.id}`}
               className="min-w-0 flex-1 truncate font-medium hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
